@@ -1,0 +1,56 @@
+name: wstar_retailer
+description: A new Flutter application.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_svg:
+  adobe_xd:
+  pinput:
+  font_awesome_flutter:
+  persistent_bottom_nav_bar:
+  intl:
+  cupertino_icons: ^1.0.0
+  fl_chart: ^0.12.3
+  charts_flutter: ^0.10.0
+  date_utils: ^0.1.0+3
+  syncfusion_flutter_datepicker: ^18.4.49-beta
+  flutter_date_pickers: ^0.1.10
+  flutter_barcode_scanner: ^1.0.2
+  intro_slider: ^2.3.4
+  image_picker: ^0.6.7+2
+  geolocator: ^5.3.2+2
+  google_maps_flutter: ^0.5.30
+  google_map_location_picker: ^3.3.4
+  flutter_localizations:
+    sdk: flutter
+  flutter_lock_screen: '^1.0.6'
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  #integration_test:
+  #  sdk: flutter
+
+# The following section is specific to Flutter.
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/image/
+    - assets/images/
+    - assets/swiftly.mp3
+    - assets/sent.mp3
+    - assets/facebook_pop.mp3
