@@ -1,4 +1,4 @@
-# wstar_retailer
+retailer
 
 A new Flutter application.
 
