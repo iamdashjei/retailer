@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wstar_retailer/login/login_pincode_screen.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
 
 class LoginEmailScreen extends StatefulWidget {
@@ -45,18 +46,23 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   borderRadius: new BorderRadius.circular(0),
                   color: HexColor("#E1E1E1"),
                 ),
-                child: TextField(
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: MediaQuery.of(context)
-                          .textScaleFactor *
-                          45),
-                  controller: _controller,
-                  decoration: InputDecoration(
-                      border: InputBorder.none
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: TextField(
+                    textAlign: TextAlign.left,
+                    keyboardType: TextInputType.emailAddress,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: MediaQuery.of(context)
+                            .textScaleFactor *
+                            30),
+                    controller: _controller,
+                    decoration: InputDecoration(
+                        hintStyle: TextStyle(color: HexColor("#BFBFBF"), fontSize: 30),
+                        border: InputBorder.none,
+                        hintText: 'Type here...'
+                    ),
                   ),
                 ),
               ),
@@ -80,7 +86,14 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                       side: BorderSide(color: HexColor("#FFAA00"))
                   ),
                   onPressed: () {
-
+                    if(_controller.text == null || _controller.text == ""){
+                      showAlertDialog(context);
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            LoginPinCodeScreen(email: _controller.text),
+                      ));
+                    }
                   },
                   child: Text("NEXT", style: TextStyle(
                       fontWeight: FontWeight.normal,
@@ -166,5 +179,32 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
       ),
     );
 
+  }
+
+  showAlertDialog(BuildContext context){
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("WStar Retailer"),
+      content: Text("Please enter your email to login."),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

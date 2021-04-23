@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:wstar_retailer/home/main_screen.dart';
-import 'package:wstar_retailer/login/login_pincode_screen.dart';
-import 'package:wstar_retailer/login/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:splashscreen/splashscreen.dart';
 import 'package:wstar_retailer/pages/main_dashboard_page.dart';
-import 'package:wstar_retailer/splash_screen.dart';
+import 'package:wstar_retailer/util/hex_color.dart';
 
 import 'login/login_email_screen.dart';
-import 'login/login_pin_screen.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  bool isLoggedIn = pref.getBool("isLoggedIn") ?? false;
+  runApp(MyApp(isLoggedIn: isLoggedIn,));
 }
 
 class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
+
+  const MyApp({Key key, this.isLoggedIn}) : super(key: key);
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,41 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Segoe UI',
       ),
-      home: LoginEmailScreen(),
+      // home: SplashScreen(
+      //     seconds: 5,
+      //     photoSize: 200,
+      //     navigateAfterSeconds: LoginEmailScreen(),
+      //     title: new Text(
+      //       'Welcome to WStar Retailer App!',
+      //       style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+      //     ),
+      //     image: Image.asset("assets/images/splash_image.png"),
+      //     backgroundColor: Colors.white,
+      //     loaderColor: HexColor("#0B1043"),
+      //   ),
+      home: isLoggedIn ? SplashScreen(
+              seconds: 5,
+              photoSize: 200,
+              navigateAfterSeconds: MainDashboardPage(),
+              title: new Text(
+                'Welcome to WStar Retailer App!',
+                style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+              ),
+              image: Image.asset("assets/images/splash_image.png"),
+              backgroundColor: Colors.white,
+              loaderColor: HexColor("#0B1043"),
+            ) : SplashScreen(
+        seconds: 5,
+        photoSize: 200,
+        navigateAfterSeconds: LoginEmailScreen(),
+        title: new Text(
+          'Welcome to WStar Retailer App!',
+          style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+        ),
+        image: Image.asset("assets/images/splash_image.png"),
+        backgroundColor: Colors.white,
+        loaderColor: HexColor("#0B1043"),
+      ),
     );
   }
 }
