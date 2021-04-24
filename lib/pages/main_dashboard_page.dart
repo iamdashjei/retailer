@@ -19,7 +19,7 @@ _MainDashboardPageState createState() => _MainDashboardPageState();
 
 class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindingObserver{
 
-  String currentTab = '';
+  String currentTab = '', nameTab = '';
   int _selectedIndex = 0;
   TextEditingController _controller = new TextEditingController();
   double amountBalance = 2000.0;
@@ -42,6 +42,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
   void initState() {
     super.initState();
     currentTab = "sales";
+    nameTab = "Dashboard";
     _controller.text = formatter.format(amountBalance);
   }
 
@@ -52,7 +53,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: HexColor("#0B1043"),
-          title: Text("Dashboard"),
+          title: Text(nameTab),
           // flexibleSpace: Image(
           //   image: AssetImage('assets/image/outerbox_bg.png'),
           //   fit: BoxFit.cover,
@@ -109,22 +110,21 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                             onTap: (){
                               Navigator.pop(context);
                               setState(() {
+                                nameTab = "Dashboard";
                                 currentTab = "sales";
                               });
                             },
                             child: Row(
                                 children: [
-                                Icon(
-                                Icons.speed_outlined,
-                                  color: Color(0xFF0B1043),
-                                  size: 25,
+                                ImageIcon(
+                                  AssetImage("assets/image/dashboard.png"), size: 30, color: Color(0xFF0B1043),
                                 ),
                                 SizedBox(
-                                  width: 10.0,
+                                  width: 15.0,
                                 ),
                                 Text('Dashboard',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF0B1043),
                                     )),
@@ -133,7 +133,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                           ),
 
                           SizedBox(
-                            height: 20.0,
+                            height: 25.0,
                           ),
 
                           GestureDetector(
@@ -141,21 +141,21 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                             onTap: (){
                               Navigator.pop(context);
                               setState(() {
+                                nameTab = "POS";
                                 currentTab = "pos";
                               });
                             },
                             child: Row(
                               children: [
-                                Icon(
-                                  Icons.mobile_friendly_outlined,
-                                  color: Color(0xFF0B1043),
+                                ImageIcon(
+                                  AssetImage("assets/image/pos.png"), size: 30, color: Color(0xFF0B1043),
                                 ),
                                 SizedBox(
-                                  width: 10.0,
+                                  width: 15.0,
                                 ),
                                 Text('POS',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF0B1043),
                                     )),
@@ -170,21 +170,21 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                             onTap: (){
                               Navigator.pop(context);
                               setState(() {
+                                nameTab = "Purchase Order";
                                 currentTab = "purchase_order";
                               });
                             },
                             child: Row(
                               children: [
-                                Icon(
-                                  FontAwesomeIcons.boxOpen,
-                                  color: Color(0xFF0B1043),
+                                ImageIcon(
+                                  AssetImage("assets/image/po.png"), size: 30, color: Color(0xFF0B1043),
                                 ),
                                 SizedBox(
-                                  width: 10.0,
+                                  width: 15.0,
                                 ),
                                 Text('Purchase Order',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF0B1043),
                                     )),
@@ -207,33 +207,29 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Column(
                       children: [
-                        GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: (){
-                            showConvertLoadAlertDialog(context);
-                          },
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.event_note,
-                                color: HexColor("#FF0000"),
-                              ),
-                              SizedBox(
-                                width: 10.0,
-                              ),
-                              Text('2,000 Balance',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: HexColor("#FF0000"),
-                                  )),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(
-                          height: 20.0,
-                        ),
+                        // GestureDetector(
+                        //   behavior: HitTestBehavior.translucent,
+                        //   onTap: (){
+                        //     showConvertLoadAlertDialog(context);
+                        //   },
+                        //   child: Row(
+                        //     children: [
+                        //       Icon(
+                        //         Icons.event_note,
+                        //         color: HexColor("#FF0000"),
+                        //       ),
+                        //       SizedBox(
+                        //         width: 10.0,
+                        //       ),
+                        //       Text('2,000 Cash-Bond (Status)',
+                        //           style: TextStyle(
+                        //             fontSize: 18,
+                        //             fontWeight: FontWeight.bold,
+                        //             color: HexColor("#FF0000"),
+                        //           )),
+                        //     ],
+                        //   ),
+                        // ),
                         GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: (){
@@ -244,16 +240,18 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                           },
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.person_outline,
-                                color: Color(0xFF0B1043),
+                              SizedBox(
+                                width: 5.0,
+                              ),
+                              ImageIcon(
+                                AssetImage("assets/image/profile.png"), size: 30, color: Color(0xFF0B1043),
                               ),
                               SizedBox(
-                                width: 10.0,
+                                width: 15.0,
                               ),
                               Text('Profile',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFF0B1043),
                                   )),
@@ -270,21 +268,24 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                               setState(() {
                                 Navigator.pop(context);
                                 currentTab = "aboutus";
+                                nameTab = "About Us";
                               });
                           },
                           child: Row(
                               children: [
-                                Icon(
-                                  FontAwesomeIcons.infoCircle,
-                                  color: Color(0xFF0B1043),
+                                SizedBox(
+                                  width: 5.0,
+                                ),
+                                ImageIcon(
+                                  AssetImage("assets/image/info.png"), size: 30, color: Color(0xFF0B1043),
                                 ),
                                 SizedBox(
-                                  width: 10.0,
+                                  width: 15.0,
                                 ),
                                 Text('About Us',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       color: Color(0xFF0B1043),
                                     )),
                               ],
@@ -296,17 +297,19 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                         ),
                         Row(
                           children: [
-                            Icon(
-                              Icons.logout,
-                              color: Color(0xFF0B1043),
+                            SizedBox(
+                              width: 5.0,
+                            ),
+                            ImageIcon(
+                              AssetImage("assets/image/out.png"), size: 30, color: Color(0xFF0B1043),
                             ),
                             SizedBox(
-                              width: 10.0,
+                              width: 15.0,
                             ),
                             Text('Log-out',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  fontSize: 18,
                                   color: Color(0xFF0B1043),
                                 )),
                           ],

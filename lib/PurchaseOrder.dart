@@ -72,7 +72,7 @@ class _PurchaseOrderPageState extends State<PurchaseOrderPage>{
                             TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: HexColor("#FF0000")),
                           ),
                           SizedBox(
-                            width: 20,
+                            width: 15,
                           ),
                           Container(
                             width: 20,
@@ -81,7 +81,11 @@ class _PurchaseOrderPageState extends State<PurchaseOrderPage>{
                               shape: BoxShape.circle,
                               color: Colors.green,
                             ),
-                          )
+                          ),
+
+                          SizedBox(
+                            width: 10,
+                          ),
                         ],
                       ),
                     ),

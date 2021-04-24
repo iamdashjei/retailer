@@ -4,6 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:wstar_retailer/charts/date_time_line_point.dart';
+import 'package:wstar_retailer/models/time_series_sales_model.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:wstar_retailer/util/indicator.dart';
@@ -794,12 +796,14 @@ class _SalesPageState extends State<SalesPage>{
                               18),),
                     ),
                     Container(
+                      height:400,
                       width: 450,
                       margin: EdgeInsets.all(20.0),
-                      child: LineChart(
-                        sampleData1(),
-                        swapAnimationDuration: const Duration(milliseconds: 250),
-                      ),
+                      // child: LineChart(
+                      //   sampleData1(),
+                      //   swapAnimationDuration: const Duration(milliseconds: 250),
+                      // ),
+                      child: DateTimeComboLinePointChart(_createSampleData()),
                     ),
                   ],
                 )
@@ -824,6 +828,55 @@ class _SalesPageState extends State<SalesPage>{
     setState(() {
       _selectedDate = newDate;
     });
+  }
+
+  /// Create one series with sample hard coded data.
+  static List<charts.Series<TimeSeriesSales, DateTime>> _createSampleData() {
+    final desktopSalesData = [
+      new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
+      new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
+      new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
+      new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
+    ];
+
+    final tableSalesData = [
+      new TimeSeriesSales(new DateTime(2017, 9, 19), 10),
+      new TimeSeriesSales(new DateTime(2017, 9, 26), 50),
+      new TimeSeriesSales(new DateTime(2017, 10, 3), 200),
+      new TimeSeriesSales(new DateTime(2017, 10, 10), 150),
+    ];
+
+    final mobileSalesData = [
+      new TimeSeriesSales(new DateTime(2017, 9, 19), 10),
+      new TimeSeriesSales(new DateTime(2017, 9, 26), 50),
+      new TimeSeriesSales(new DateTime(2017, 10, 3), 200),
+      new TimeSeriesSales(new DateTime(2017, 10, 10), 150),
+    ];
+
+    return [
+      new charts.Series<TimeSeriesSales, DateTime>(
+        id: 'Desktop',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (TimeSeriesSales sales, _) => sales.time,
+        measureFn: (TimeSeriesSales sales, _) => sales.sales,
+        data: desktopSalesData,
+      ),
+      new charts.Series<TimeSeriesSales, DateTime>(
+        id: 'Tablet',
+        colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+        domainFn: (TimeSeriesSales sales, _) => sales.time,
+        measureFn: (TimeSeriesSales sales, _) => sales.sales,
+        data: tableSalesData,
+      ),
+      new charts.Series<TimeSeriesSales, DateTime>(
+          id: 'Mobile',
+          colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
+          domainFn: (TimeSeriesSales sales, _) => sales.time,
+          measureFn: (TimeSeriesSales sales, _) => sales.sales,
+          data: mobileSalesData)
+      // Configure our custom point renderer for this series.
+        ..setAttribute(charts.rendererIdKey, 'customPoint'),
+    ];
   }
 
 

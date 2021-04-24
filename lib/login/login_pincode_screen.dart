@@ -48,6 +48,7 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Container(
             child: Column(

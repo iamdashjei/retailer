@@ -2,7 +2,7 @@
     package="lesterg.wstar_retailer">
    <application
         android:label="wstar_retailer"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/splash_image">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
