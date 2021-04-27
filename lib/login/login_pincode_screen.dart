@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:collection';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,16 +24,29 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
   String allPinCombined = "";
   SharedPreferences pref;
 
+  final databaseReference = FirebaseDatabase.instance.reference();
+  StreamSubscription<Event> _onRetailerAdded;
+  StreamSubscription<Event>  _onRetailUpdate;
+  Query _todoQuery;
+  Map<String, String> emailAndPin = new HashMap<String, String>();
+  Map<String, String> emailAndStatus = new HashMap<String, String>();
+  Map<String, String> emailAndUID = new HashMap<String, String>();
+
 
   @override
   void initState() {
     super.initState();
+    _todoQuery = databaseReference.reference().child("retailers");
+    _onRetailerAdded = _todoQuery.onChildAdded.listen(onEntryRetailerAdded);
+    _onRetailUpdate = _todoQuery.onChildChanged.listen(onEntryRetailerChanged);
     loadData();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _onRetailerAdded.cancel();
+    _onRetailUpdate.cancel();
   }
 
   loadData() async {
@@ -608,21 +625,28 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
 
     });
 
-    if(allPinCombined == "1234"){
-      pref.setBool("isLoggedIn", true);
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>
-            MainDashboardPage(),
-      ));
-    } else {
-      if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true){
-        showAlertDialog(context);
-      }
+    if(emailAndPin.containsKey(widget.email)){
+      if(allPinCombined == emailAndPin[widget.email]){
+        if(emailAndStatus[widget.email] == "Activated"){
+          pref.setBool("isLoggedIn", true);
+          pref.setString("myUIDRetailer", emailAndUID[widget.email]);
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                MainDashboardPage(),
+          ));
+        } else {
+          showAlertDialog(context, "Your account is not yet activated.");
+        }
+      } else {
+        if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true){
+          showAlertDialog(context, "Wrong pin. Please Try Again.");
+        }
 
+      }
     }
   }
 
-  showAlertDialog(BuildContext context){
+  showAlertDialog(BuildContext context, String message){
     // set up the button
     Widget okButton = FlatButton(
       child: Text("OK"),
@@ -634,7 +658,7 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("WStar Retailer"),
-      content: Text("Wrong pin code. Please Try again."),
+      content: Text(message),
       actions: [
         okButton,
       ],
@@ -647,6 +671,34 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
         return alert;
       },
     );
+  }
+
+  onEntryRetailerAdded(Event event) {
+
+    if(event.snapshot.value != null){
+      setState(() {
+        emailAndPin.putIfAbsent(event.snapshot.value["email"].toString(), () => event.snapshot.value["pin"].toString());
+        emailAndStatus.putIfAbsent(event.snapshot.value["email"].toString(), () => event.snapshot.value["activatedStatus"].toString());
+        emailAndUID.putIfAbsent(event.snapshot.value["email"].toString(), () => event.snapshot.value["uid"].toString());
+      });
+
+
+    }
+
+    //print("IDS => " + onlineIds.values.toString());
+  }
+
+  onEntryRetailerChanged(Event event) {
+
+    if(event.snapshot.value != null){
+      // print(event.snapshot.value["status"]);
+      setState(() {
+        emailAndPin.update(event.snapshot.value["email"].toString(), (v) => event.snapshot.value["pin"].toString());
+        emailAndStatus.update(event.snapshot.value["email"].toString(), (v) => event.snapshot.value["activatedStatus"].toString());
+        emailAndUID.update(event.snapshot.value["email"].toString(), (v) => event.snapshot.value["uid"].toString());
+      });
+
+    }
   }
 
 

@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intro_slider/intro_slider.dart';
-import 'package:intro_slider/slide_object.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:wstar_retailer/models/retailer.dart';
 
 class ProfilePage extends StatefulWidget {
+  final Retailer myInfo;
+
+  const ProfilePage({Key key, this.myInfo}) : super(key: key);
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -16,6 +19,11 @@ class _ProfilePageState extends State<ProfilePage>{
 
   File _image;
   Future<File> imageFile;
+
+  SharedPreferences preferences;
+  DatabaseReference profileReference;
+
+
 
   @override
   void initState() {
@@ -49,76 +57,83 @@ class _ProfilePageState extends State<ProfilePage>{
                             backgroundColor: Colors.white,
                             radius: 50.0,
                             //child: updatedImage != null ? Image.network("$updatedImage", fit: BoxFit.scaleDown,) :SvgPicture.asset('assets/image/profiles.svg'),
-                            backgroundImage: AssetImage("assets/images/splash_image.png"),
+                            backgroundImage: widget.myInfo.avatar != null ? NetworkImage(widget.myInfo.avatar) : NetworkImage("'https://raw.githubusercontent.com/socialityio/laravel-default-profile-image/master/docs/images/profile.png'"),
                           ),
                         ),
                       ),
                       TextFormField(
-
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your Business Name',
                           labelText: 'Business Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "Aling Puring Sari Sari Store",
+                        initialValue: widget.myInfo.businessName,
                       ),
 
                       TextFormField(
 
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your First Name',
                           labelText: 'First Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "James",
+                        initialValue: widget.myInfo.firstName,
                       ),
 
                       TextFormField(
 
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your Middle Name',
                           labelText: 'Business Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "Basco",
+                        initialValue: widget.myInfo.middleName,
                       ),
 
                       TextFormField(
 
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your Last Name',
                           labelText: 'Last Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "Santos",
+                        initialValue: widget.myInfo.lastName,
                       ),
 
                       TextFormField(
 
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your Contact No.',
                           labelText: 'Contact No.',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "+63 916 5615 552",
+                        initialValue: widget.myInfo.contactNo,
                       ),
 
                       TextFormField(
 
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your Email',
                           labelText: 'Email',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
+                        initialValue: widget.myInfo.email,
                       ),
 
                       TextFormField(
+                        enabled: false,
                         maxLines: 2,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
@@ -126,29 +141,31 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'Business Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "Blk 38 Lot 14 Anunas St. Brgy Balibago, Angeles City, Pampanga",
+                        initialValue: widget.myInfo.address,
                       ),
 
                       TextFormField(
 
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your ID Type',
                           labelText: 'ID Type',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "Driver's License",
+                        initialValue: widget.myInfo.idType,
                       ),
 
                       TextFormField(
 
+                        enabled: false,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your ID No.',
                           labelText: 'ID No.',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: "C10-4212432-23421",
+                        initialValue: widget.myInfo.idNo,
                       ),
 
                       Column(
@@ -156,13 +173,13 @@ class _ProfilePageState extends State<ProfilePage>{
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Divider(),
-                          showImage(),
-                          RaisedButton(
-                            child: Text("Change Image"),
-                            onPressed: () {
-                              pickImageFromGallery(ImageSource.camera);
-                            },
-                          ),
+                          widget.myInfo.idImageUrl != null ? Image.network(widget.myInfo.idImageUrl, width: 400, height: 300) : Container(),
+                          // RaisedButton(
+                          //   child: Text("Change Image"),
+                          //   onPressed: () {
+                          //     pickImageFromGallery(ImageSource.camera);
+                          //   },
+                          // ),
                         ],
                       ),
 
@@ -206,6 +223,8 @@ class _ProfilePageState extends State<ProfilePage>{
       },
     );
   }
+
+
 
 
 

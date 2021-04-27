@@ -3,13 +3,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:wstar_retailer/Bulletin.dart';
 import 'package:wstar_retailer/POSSIM.dart';
+import 'package:wstar_retailer/models/retailer.dart';
 import 'package:wstar_retailer/pages/profile/myprofile.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:wstar_retailer/api_connection/stream_user_api.dart';
+import 'package:wstar_retailer/pages/bulletin/news_feed.dart';
 
 import '../AboutUs.dart';
 import '../Chatroom.dart';
 import '../PurchaseOrder.dart';
+import 'chatroom/chat.dart';
 import 'dashboard/Dashboard.dart';
 
 class MainDashboardPage extends StatefulWidget {
@@ -20,10 +26,16 @@ _MainDashboardPageState createState() => _MainDashboardPageState();
 class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindingObserver{
 
   String currentTab = '', nameTab = '';
+  String uid, type, displayName;
   int _selectedIndex = 0;
   TextEditingController _controller = new TextEditingController();
   double amountBalance = 2000.0;
   final formatter = new NumberFormat("#,##0.00#", "en_US");
+
+  SharedPreferences preferences;
+  DatabaseReference profileReference;
+
+  Retailer retailerData;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -32,8 +44,10 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
         currentTab = "sales";
       } else if (index == 1){
         currentTab = "bulletin";
+        nameTab = "Bulletin";
       } else if (index == 2){
         currentTab = "chatroom";
+        nameTab = "Chatroom";
       }
     });
   }
@@ -44,6 +58,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
     currentTab = "sales";
     nameTab = "Dashboard";
     _controller.text = formatter.format(amountBalance);
+    initPrefAndLogin();
   }
 
   @override
@@ -235,7 +250,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                           onTap: (){
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) =>
-                                  ProfilePage(),
+                                  ProfilePage(myInfo: retailerData),
                             ));
                           },
                           child: Row(
@@ -373,10 +388,16 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
       return SalesPage();
     }
     else if (selectTab == "bulletin") {
-      return Bulletin();
+      setState(() {
+        _selectedIndex = 1;
+      });
+      return NewsFeed(uid: uid, type: type, displayName: displayName);
     }
     else if (selectTab == "chatroom") {
-      return Chatroom();
+      setState(() {
+        _selectedIndex = 2;
+      });
+      return Chat();
     }
     else if (selectTab == "aboutus") {
       _selectedIndex = 0;
@@ -491,6 +512,37 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
 
       },
     );
+  }
+
+  void initPrefAndLogin() async {
+    preferences = await SharedPreferences.getInstance();
+    profileReference = FirebaseDatabase.instance.reference().child("retailers").child(preferences.getString("myUIDRetailer"));
+    TransactionResult transactionResultForUser = await profileReference.runTransaction((MutableData mutableData) async {
+      return mutableData;
+    });
+
+    if(transactionResultForUser.dataSnapshot.value != null){
+      print("initLogin");
+
+      type = transactionResultForUser.dataSnapshot.value["type"];
+      List<String> userEmailLoggedIn = transactionResultForUser.dataSnapshot.value["email"].split("@");
+
+      await StreamUserApi.login(idUser: userEmailLoggedIn[0].toString(),
+          fullName: transactionResultForUser.dataSnapshot.value["name"],
+          avatar: transactionResultForUser.dataSnapshot.value["avatar"],
+          type: transactionResultForUser.dataSnapshot.value["type"],
+          uid: transactionResultForUser.dataSnapshot.value["uid"]);
+
+      // preferences.setString("myUID", transactionResultForUser.dataSnapshot.value["uid"]);
+      uid = transactionResultForUser.dataSnapshot.value["uid"];
+      displayName = transactionResultForUser.dataSnapshot.value["fullName"];
+
+      retailerData = Retailer.fromSnapshot(transactionResultForUser.dataSnapshot);
+      //userName = preferences.getString("userName");
+
+      //_updateStateUser("Active");
+      // createChannelWithUsers(userEmailLoggedIn[0].toString());
+    }
   }
 
 }

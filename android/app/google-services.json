@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "798170260953",
+    "firebase_url": "https://wstar-ce1b8-default-rtdb.firebaseio.com",
+    "project_id": "wstar-ce1b8",
+    "storage_bucket": "wstar-ce1b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798170260953:android:052051d25b287b5afe65c8",
+        "android_client_info": {
+          "package_name": "com.example.wstar_agent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "798170260953-t4ihem3cal9btngd7pl6kn13lh5582ci.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCit6s_XzQxptwXvq5xobwaBhRs2vh1fdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798170260953-t4ihem3cal9btngd7pl6kn13lh5582ci.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798170260953:android:d4cfb9376ebcf6f1fe65c8",
+        "android_client_info": {
+          "package_name": "lesterg.wstar_retailer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "798170260953-t4ihem3cal9btngd7pl6kn13lh5582ci.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCit6s_XzQxptwXvq5xobwaBhRs2vh1fdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798170260953-t4ihem3cal9btngd7pl6kn13lh5582ci.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
