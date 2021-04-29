@@ -1,10 +1,22 @@
+import 'dart:async';
+import 'dart:collection';
+
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
 import 'Bulletin.dart';
 import 'Chatroom.dart';
+import 'models/siminformation.dart';
 //POSSIMList(),
 class PurchaseOrderPage extends StatefulWidget {
+  final String myUID;
+
+  const PurchaseOrderPage({Key key, this.myUID}) : super(key: key);
+
   @override
   _PurchaseOrderPageState createState() => _PurchaseOrderPageState();
 }
@@ -14,86 +26,119 @@ class _PurchaseOrderPageState extends State<PurchaseOrderPage>{
   String simValue = "", loadValue = "";
   TextEditingController _controller = new TextEditingController();
 
+  StreamSubscription<Event> _onRetailerAdded;
+  StreamSubscription<Event>  _onRetailUpdate;
+  Query _todoQuery;
+  DatabaseReference databaseReference, poItems;
+
   @override
   void initState() {
+
+    //_todoQuery = FirebaseDatabase.instance.reference().child("po");
+    databaseReference = FirebaseDatabase.instance.reference().child("po").child(widget.myUID);
+    poItems = FirebaseDatabase.instance.reference().child("po").child(widget.myUID);
+   // _onRetailerAdded = _todoQuery.onChildAdded.listen(onEntryPurchaseAdded);
+   /// _onRetailUpdate = _todoQuery.onChildChanged.listen(onEntryPurchaseChanged);
     super.initState();
   }
 
   @override
   void dispose(){
     super.dispose();
+  //  _onRetailerAdded.cancel();
+  //  _onRetailUpdate.cancel();
   }
+
+  // onEntryPurchaseAdded(Event event){
+  //
+  // }
+  //
+  // onEntryPurchaseChanged(Event event){
+  //
+  // }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: ListView.builder(
-            itemCount: 12,
-            itemBuilder: (context, index){
-              return Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 5,
-                  ),
-                  GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () {
-                      print("Clicked");
-                      showConfirmAlertDialog(context);
-                     // Navigator.push(context, MaterialPageRoute(builder: (context) => SalesDetails(cartData: _cartData[index],)));
-                    },
-                    child: Container(
-                      //margin: EdgeInsets.only(top: 5.0),
-                      padding: EdgeInsets.all(10),
-                      child: Row(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverList(
+            delegate: new SliverChildListDelegate([
+              Container(
+                child: FirebaseAnimatedList(
+                    reverse: true,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    query: poItems,
+                    itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                      return Column(
                         children: <Widget>[
-                          Text(
-                            'Apr 16, 2021 04:35 PM',
-                            style:
-                            TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
-                          ),
                           SizedBox(
-                            width: 50,
+                            height: 5,
                           ),
+                          GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              print("Clicked");
+                              showConfirmAlertDialog(context);
+                              // Navigator.push(context, MaterialPageRoute(builder: (context) => SalesDetails(cartData: _cartData[index],)));
+                            },
+                            child: Container(
+                              //margin: EdgeInsets.only(top: 5.0),
+                              padding: EdgeInsets.all(10),
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    "${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["poDate"]))}",
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+                                  ),
+                                  SizedBox(
+                                    width: 50,
+                                  ),
 //                           Text(
 // //                                '${_cartData[index].riderName}',
 //                             'RIDER NAME',
 //                             style:
 //                             TextStyle(fontWeight: FontWeight.bold),
 //                           ),
-                          Spacer(),
-                          Text(
-                            'Load: P1,000.00',
-                            style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: HexColor("#FF0000")),
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.green,
+                                  Spacer(),
+                                  Text(
+                                    snapshot.value["poType"] == "sim" ? "SIM: " + snapshot.value["poValue"].toString() + " pcs"
+                                        : "Load: P: " + snapshot.value["poValue"].toString() + ".00",
+
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: HexColor("#FF0000")),
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: statusColor(snapshot.value["status"]),
+                                    ),
+                                  ),
+
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-
-                          SizedBox(
-                            width: 10,
-                          ),
+                          Divider(thickness: 2, endIndent: 10, indent: 10,),
                         ],
-                      ),
-                    ),
-                  ),
-                  Divider(thickness: 2, endIndent: 10, indent: 10,),
-                ],
-              );
-            }),
+                      );
+                    }),
+              ),
+            ]),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: HexColor("#0B1043"),
@@ -117,7 +162,38 @@ class _PurchaseOrderPageState extends State<PurchaseOrderPage>{
       ),
       child: Text("Confirm"),
       onPressed: () {
-        Navigator.of(context).pop();
+        if(isSim == true){
+          PurchaseOrderDetails simInformation = new PurchaseOrderDetails();
+          simInformation.uid = widget.myUID;
+          simInformation.poValue = double.parse(simValue);
+          simInformation.uidReceived = "";
+          simInformation.transactTimestamp = DateTime.now().millisecondsSinceEpoch;
+          simInformation.status = "new";
+          simInformation.poType = "sim";
+          simInformation.poDate = DateTime.now().toIso8601String();
+
+          Map<String, dynamic> childUpdate = new HashMap<String, dynamic>();
+          childUpdate.putIfAbsent(DateTime.now().millisecondsSinceEpoch.toString(), () => simInformation.toJson());
+          databaseReference.update(childUpdate);
+          _controller.clear();
+          Navigator.of(context).pop();
+        } else if (isLoad == true) {
+          PurchaseOrderDetails simInformation = new PurchaseOrderDetails();
+          simInformation.uid = widget.myUID;
+          simInformation.poValue = double.parse(loadValue);
+          simInformation.uidReceived = "";
+          simInformation.transactTimestamp = DateTime.now().millisecondsSinceEpoch;
+          simInformation.status = "new";
+          simInformation.poType = "load";
+          simInformation.poDate = DateTime.now().toIso8601String();
+
+          Map<String, dynamic> childUpdate = new HashMap<String, dynamic>();
+          childUpdate.putIfAbsent(DateTime.now().millisecondsSinceEpoch.toString(), () => simInformation.toJson());
+          databaseReference.update(childUpdate);
+          _controller.clear();
+          Navigator.of(context).pop();
+        }
+        //Navigator.of(context).pop();
       },
     );
 
@@ -348,5 +424,19 @@ class _PurchaseOrderPageState extends State<PurchaseOrderPage>{
     );
   }
 
+  Color statusColor(String color){
+    Color pickColor;
+
+    if(color == "new"){
+      pickColor = HexColor("#FFAA00");
+    } else if(color == "approved") {
+      pickColor = HexColor("#1FAE1A");
+    } else if(color == "processed") {
+      pickColor = HexColor("#0B1043");
+    } else  {
+      pickColor = HexColor("#FF0000");
+    }
+    return pickColor;
+  }
 
 }

@@ -376,13 +376,13 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
       setState(() {
         _selectedIndex = 0;
       });
-      return POSSIM();
+      return POSSIM(myUID: uid);
     }
     else if (selectTab == "purchase_order") {
       setState(() {
         _selectedIndex = 0;
       });
-      return PurchaseOrderPage();
+      return PurchaseOrderPage(myUID: uid,);
     }
     else if (selectTab == "sales") {
       return SalesPage();

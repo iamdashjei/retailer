@@ -22,6 +22,8 @@ class Retailer{
   String idImageUrl;
   String pin;
   int lastActiveAt;
+  double loadBalance;
+  int simCount;
   String createdAt;
   String status;
   String activatedStatus;
@@ -57,6 +59,8 @@ class Retailer{
     this.idNo,
     this.idImageUrl,
     this.pin,
+    this.loadBalance,
+    this.simCount,
     this.retailerData,
     this.extraData
   });
@@ -86,6 +90,8 @@ class Retailer{
         idNo = dataSnapshot.value["idNo"],
         idImageUrl = dataSnapshot.value["idImageUrl"],
         pin = dataSnapshot.value["pin"],
+        loadBalance = double.parse(dataSnapshot.value["loadBalance"].toString()),
+        simCount = int.parse(dataSnapshot.value["simCount"].toString()),
         retailerData = dataSnapshot.value["retailerData"],
         extraData = dataSnapshot.value["extraData"];
 
@@ -116,6 +122,8 @@ class Retailer{
       "idNo": idNo,
       "idImageUrl": idImageUrl,
       "pin": pin,
+      "loadBalance": loadBalance,
+      "simCount": simCount,
       "retailerData": retailerData,
       "extraData": extraData,
     };
@@ -147,6 +155,8 @@ class Retailer{
       idNo.hashCode ^
       idImageUrl.hashCode ^
       pin.hashCode ^
+      loadBalance.hashCode ^
+      simCount.hashCode ^
       retailerData.hashCode ^
       extraData.hashCode;
 

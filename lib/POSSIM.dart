@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
@@ -5,13 +6,33 @@ import 'Bulletin.dart';
 import 'Chatroom.dart';
 import 'POSLoad.dart';
 import 'POSSIMList.dart';
+import 'models/retailer.dart';
 //POSSIMList(),
 class POSSIM extends StatefulWidget {
+  final String myUID;
+
+  const POSSIM({Key key, this.myUID}) : super(key: key);
   @override
   _POSSIMPageState createState() => _POSSIMPageState();
 }
 
 class _POSSIMPageState extends State<POSSIM> with AutomaticKeepAliveClientMixin<POSSIM>{
+
+  DatabaseReference updateMyInfo;
+  double amount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    updateMyInfo = FirebaseDatabase.instance.reference().child("retailers");
+    getMyInfo();
+
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +72,8 @@ class _POSSIMPageState extends State<POSSIM> with AutomaticKeepAliveClientMixin<
         ),
         body: TabBarView(
           children: [
-            POSSIMList(),
-            POSLoad(),
+            POSSIMList(myUID: widget.myUID),
+            POSLoad(myUID: widget.myUID, balance: amount),
           ],
         ),
       ),
@@ -62,5 +83,20 @@ class _POSSIMPageState extends State<POSSIM> with AutomaticKeepAliveClientMixin<
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
-  
+
+
+  void getMyInfo() async {
+    TransactionResult transactionResult = await updateMyInfo.child(widget.myUID).runTransaction((MutableData mutableData) async {
+      return mutableData;
+    });
+
+    Retailer info = Retailer.fromSnapshot(transactionResult.dataSnapshot);
+    setState(() {
+      amount = info.loadBalance;
+    });
+
+
+  }
+
+
 }
