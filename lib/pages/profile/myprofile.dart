@@ -2,15 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wstar_retailer/models/dito_user.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:wstar_retailer/models/retailer.dart';
 
 class ProfilePage extends StatefulWidget {
-  final Retailer myInfo;
+  final DitoUser ditoUser;
 
-  const ProfilePage({Key key, this.myInfo}) : super(key: key);
+  const ProfilePage({Key key, this.ditoUser}) : super(key: key);
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -57,7 +58,8 @@ class _ProfilePageState extends State<ProfilePage>{
                             backgroundColor: Colors.white,
                             radius: 50.0,
                             //child: updatedImage != null ? Image.network("$updatedImage", fit: BoxFit.scaleDown,) :SvgPicture.asset('assets/image/profiles.svg'),
-                            backgroundImage: widget.myInfo.avatar != null ? NetworkImage(widget.myInfo.avatar) : NetworkImage("'https://raw.githubusercontent.com/socialityio/laravel-default-profile-image/master/docs/images/profile.png'"),
+                            //backgroundImage: widget.myInfo.avatar != null ? NetworkImage(widget.myInfo.avatar) : NetworkImage("'https://raw.githubusercontent.com/socialityio/laravel-default-profile-image/master/docs/images/profile.png'"),
+                            backgroundImage: NetworkImage("https://raw.githubusercontent.com/socialityio/laravel-default-profile-image/master/docs/images/profile.png"),
                           ),
                         ),
                       ),
@@ -69,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'Business Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.businessName,
+                        initialValue: widget.ditoUser.details.businessName,
                       ),
 
                       TextFormField(
@@ -81,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'First Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.firstName,
+                        initialValue: widget.ditoUser.details.fName,
                       ),
 
                       TextFormField(
@@ -90,10 +92,10 @@ class _ProfilePageState extends State<ProfilePage>{
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your Middle Name',
-                          labelText: 'Business Name',
+                          labelText: 'Middle Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.middleName,
+                        initialValue: widget.ditoUser.details.mName,
                       ),
 
                       TextFormField(
@@ -105,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'Last Name',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.lastName,
+                        initialValue: widget.ditoUser.details.lName,
                       ),
 
                       TextFormField(
@@ -117,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'Contact No.',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.contactNo,
+                        initialValue: widget.ditoUser.details.contactNo,
                       ),
 
                       TextFormField(
@@ -129,19 +131,19 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'Email',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.email,
+                        initialValue: widget.ditoUser.details.emailAddress,
                       ),
 
                       TextFormField(
                         enabled: false,
-                        maxLines: 2,
+                        maxLines: 1,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         decoration: const InputDecoration(
                           hintText: 'Enter Your Address',
-                          labelText: 'Business Name',
+                          labelText: 'Address',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.address,
+                        initialValue: widget.ditoUser.details.address,
                       ),
 
                       TextFormField(
@@ -153,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'ID Type',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.idType,
+                        initialValue: widget.ditoUser.details.idType.toString(),
                       ),
 
                       TextFormField(
@@ -165,7 +167,7 @@ class _ProfilePageState extends State<ProfilePage>{
                           labelText: 'ID No.',
                           hintStyle: TextStyle(fontSize: 20),
                         ),
-                        initialValue: widget.myInfo.idNo,
+                        initialValue: widget.ditoUser.details.idNo,
                       ),
 
                       Column(
@@ -173,7 +175,8 @@ class _ProfilePageState extends State<ProfilePage>{
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Divider(),
-                          widget.myInfo.idImageUrl != null ? Image.network(widget.myInfo.idImageUrl, width: 400, height: 300) : Container(),
+                          Image.network("https://raw.githubusercontent.com/socialityio/laravel-default-profile-image/master/docs/images/profile.png", width: 400, height: 300),
+                          //widget.myInfo.idImageUrl != null ? Image.network(widget.myInfo.idImageUrl, width: 400, height: 300) : Container(),
                           // RaisedButton(
                           //   child: Text("Change Image"),
                           //   onPressed: () {

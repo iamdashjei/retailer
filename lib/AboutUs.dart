@@ -180,7 +180,6 @@ class _AboutUsPageState extends State<AboutUsPage>{
 
       // Behavior
       scrollPhysics: BouncingScrollPhysics(),
-      shouldHideStatusBar: false,
 
       // On tab change completed
       onTabChangeCompleted: this.onTabChangeCompleted,

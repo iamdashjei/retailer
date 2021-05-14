@@ -1,17 +1,20 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
-import 'Bulletin.dart';
-import 'Chatroom.dart';
 import 'POSLoad.dart';
 import 'POSSIMList.dart';
 import 'models/retailer.dart';
-//POSSIMList(),
+import 'package:http/http.dart' as http;
+
 class POSSIM extends StatefulWidget {
+  final String token;
   final String myUID;
 
-  const POSSIM({Key key, this.myUID}) : super(key: key);
+  const POSSIM({Key key, this.myUID, this.token}) : super(key: key);
   @override
   _POSSIMPageState createState() => _POSSIMPageState();
 }
@@ -25,8 +28,8 @@ class _POSSIMPageState extends State<POSSIM> with AutomaticKeepAliveClientMixin<
   void initState() {
     super.initState();
     updateMyInfo = FirebaseDatabase.instance.reference().child("retailers");
-    getMyInfo();
-
+    //getMyInfo();
+    myCurrentItems(widget.token);
   }
 
   @override
@@ -34,10 +37,26 @@ class _POSSIMPageState extends State<POSSIM> with AutomaticKeepAliveClientMixin<
     super.dispose();
   }
 
+  Future myCurrentItems(String myToken) async {
+    final response = await http.get(
+      Uri.https('api.wstarict.com', 'api/v1/auth/purchaseOrders/my_current_items'),
+      headers: {
+        HttpHeaders.authorizationHeader:'Bearer $myToken',
+      },
+    );
+
+    if(response.statusCode == 200){
+      var data = json.decode(response.body);
+      print(data[0]["current_quantity"]);
+    } else {
+      throw Exception('Request Failed.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-
+    super.build(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(

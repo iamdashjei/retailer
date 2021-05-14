@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:wstar_retailer/pages/main_dashboard_page.dart';
@@ -12,6 +13,8 @@ import 'package:overlay_support/overlay_support.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await FlutterStatusbarcolor.setStatusBarColor(HexColor("#060A33"));
+  FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
   SharedPreferences pref = await SharedPreferences.getInstance();
   bool isLoggedIn = pref.getBool("isLoggedIn") ?? false;
   runApp(MyApp(isLoggedIn: isLoggedIn,));

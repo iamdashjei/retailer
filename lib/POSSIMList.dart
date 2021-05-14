@@ -9,8 +9,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
-import 'Bulletin.dart';
-import 'Chatroom.dart';
 import 'models/retailer.dart';
 import 'models/siminformation.dart';
 //POSSIMList(),
@@ -47,7 +45,7 @@ class _POSSIMListPageState extends State<POSSIMList>{
 
     updateMyInfo = FirebaseDatabase.instance.reference().child("retailers");
 
-    initMySimInfo();
+    //initMySimInfo();
   }
 
   @override
@@ -60,8 +58,8 @@ class _POSSIMListPageState extends State<POSSIMList>{
   onEntrySIMAdded(Event event){
       if(event.snapshot.value != null){
         //setState(() {
-          SIMInformation simInfo = SIMInformation.fromSnapshot(event.snapshot);
-          simMap.putIfAbsent(event.snapshot.value["barcodeNumber"], () => simInfo);
+         // SIMInformation simInfo = SIMInformation.fromSnapshot(event.snapshot);
+         // simMap.putIfAbsent(event.snapshot.value["barcodeNumber"], () => simInfo);
         //});
 
       }
@@ -88,7 +86,7 @@ class _POSSIMListPageState extends State<POSSIMList>{
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                      child: Text(simCounter.toString() + " SIMs", style: TextStyle(
+                      child: Text(simCounter > 1 ? simCounter.toString() + " SIMs" : simCounter.toString() + " SIM", style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: MediaQuery.of(context)
                               .textScaleFactor *
@@ -106,58 +104,58 @@ class _POSSIMListPageState extends State<POSSIMList>{
                 SizedBox(height: 5),
                 Divider(thickness: 2, endIndent: 10, indent: 10,),
                 SizedBox(height: 10),
-                Container(
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        height: 800,
-                        child: FirebaseAnimatedList(
-                            physics: NeverScrollableScrollPhysics(),
-                            query: saleItems,
-                            reverse: false,
-                            //shrinkWrap: true,
-                            itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                              if(snapshot.value["uid"].toString() == widget.myUID && snapshot.value["status"].toString() != "sold"){
-                                return Column(
-                                  children: <Widget>[
-                                    ListTile(
-                                      onTap: () {
-                                        print("Tapped");
-
-                                      }, trailing: Text(snapshot.value["amount"].toString() + ".00", style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 25, color: HexColor("##FF0000")),),
-                                      title: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text("${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["date"]))}",
-                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 16)),
-                                        ],
-                                      ),
-                                      subtitle: Row(
-                                        children: [
-                                          Image.asset('assets/image/barcode.png', width: 15, height: 20),
-                                          SizedBox(width: 5),
-                                          Expanded(child: Text(snapshot.value["barcodeNumber"].toString(), style: TextStyle(fontWeight: FontWeight.normal,
-                                              fontStyle: FontStyle.italic, fontSize: MediaQuery.of(context).textScaleFactor * 15,
-                                              color: HexColor("##FF0000")))),
-
-                                          SizedBox(width: 5,),
-                                        ],
-                                      ),
-                                    ),
-                                    Divider(thickness: 2, endIndent: 10, indent: 10,),
-                                  ],
-                                );
-                              } else {
-                                return Container();
-                              }
-
-                            }),
-                      ),
-                      SizedBox(height: 5),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   decoration: BoxDecoration(color: Colors.white),
+                //   child: Column(
+                //     children: <Widget>[
+                //       Container(
+                //         height: 800,
+                //         child: FirebaseAnimatedList(
+                //             physics: NeverScrollableScrollPhysics(),
+                //             query: saleItems,
+                //             reverse: false,
+                //             //shrinkWrap: true,
+                //             itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                //               if(snapshot.value["uid"].toString() == widget.myUID && snapshot.value["status"].toString() == "sold"){
+                //                 return Column(
+                //                   children: <Widget>[
+                //                     ListTile(
+                //                       onTap: () {
+                //                         print("Tapped");
+                //
+                //                       }, trailing: Text(snapshot.value["amount"].toString() + ".00", style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 25, color: HexColor("##FF0000")),),
+                //                       title: Row(
+                //                         mainAxisAlignment: MainAxisAlignment.start,
+                //                         children: <Widget>[
+                //                           Text("${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["date"]))}",
+                //                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 16)),
+                //                         ],
+                //                       ),
+                //                       subtitle: Row(
+                //                         children: [
+                //                           Image.asset('assets/image/barcode.png', width: 15, height: 20),
+                //                           SizedBox(width: 5),
+                //                           Expanded(child: Text(snapshot.value["barcodeNumber"].toString(), style: TextStyle(fontWeight: FontWeight.normal,
+                //                               fontStyle: FontStyle.italic, fontSize: MediaQuery.of(context).textScaleFactor * 15,
+                //                               color: HexColor("##FF0000")))),
+                //
+                //                           SizedBox(width: 5,),
+                //                         ],
+                //                       ),
+                //                     ),
+                //                     Divider(thickness: 2, endIndent: 10, indent: 10,),
+                //                   ],
+                //                 );
+                //               } else {
+                //                 return Container();
+                //               }
+                //
+                //             }),
+                //       ),
+                //       SizedBox(height: 5),
+                //     ],
+                //   ),
+                // ),
               ]),
           ),
         ],
@@ -221,6 +219,7 @@ class _POSSIMListPageState extends State<POSSIMList>{
       child: Text("Confirm"),
       onPressed: () {
         simInfo.status = "sold";
+        simInfo.amount = double.parse(_controller.text);
         simInfo.transactTimestamp = DateTime.now().millisecondsSinceEpoch;
         Map<String, dynamic> childUpdate = new HashMap<String, dynamic>();
         childUpdate.putIfAbsent(simInfo.key, () => simInfo.toJson());
@@ -259,8 +258,10 @@ class _POSSIMListPageState extends State<POSSIMList>{
       barrierDismissible: false,
       builder: (BuildContext context) {
       return StatefulBuilder(
-        builder: (context, setState)
-      {
+        builder: (context, setState) {
+          setState(() {
+            _controller.text = simInfo.amount.toString();
+          });
         return AlertDialog(
           contentPadding: EdgeInsets.zero,
           title: Center(child: Text("Scan Barcode")),
@@ -305,14 +306,19 @@ class _POSSIMListPageState extends State<POSSIMList>{
                       color: HexColor("#E1E1E1"),
                     ),
                     child: Center(
-                      child: Text(simInfo.amount.toString(),
+                      child: TextField(
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                            fontSize: MediaQuery
-                                .of(context)
+                            fontSize: MediaQuery.of(context)
                                 .textScaleFactor *
                                 45),
+                        controller: _controller,
+                        decoration: InputDecoration(
+                            border: InputBorder.none
+                        ), onChanged: (text){
+                      },
                       ),
                     ),
                   ),

@@ -33,7 +33,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ),
               Padding(
                 padding: EdgeInsets.only(left: 10.0),
-                child: Text("Enter your New E-mail Address", style: TextStyle(
+                child: Text("Enter your UID", style: TextStyle(
                     fontWeight: FontWeight.normal,
                     color: Colors.black,
                     fontSize: MediaQuery.of(context)
@@ -57,6 +57,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                         fontSize: MediaQuery.of(context)
                             .textScaleFactor *
                             30),
+                    textCapitalization: TextCapitalization.sentences,
                     controller: _controller,
                     decoration: InputDecoration(
                         hintStyle: TextStyle(color: HexColor("#BFBFBF"), fontSize: 30),
@@ -68,7 +69,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ),
               Padding(
                 padding: EdgeInsets.only(left: 10.0),
-                child: Text("Make sure your e-mail is registered by your Sub Dealer", style: TextStyle(
+                child: Text("Make sure your UID is registered by your Sub Dealer", style: TextStyle(
                     fontWeight: FontWeight.normal,
                     color: Colors.black,
                     fontSize: MediaQuery.of(context)
@@ -104,48 +105,48 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 ),
               ),
               SizedBox(height: 30),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 10.0),
-                    child: Text("Or use Existing E-mail Address (Select One)", style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black,
-                        fontSize: MediaQuery.of(context)
-                            .textScaleFactor *
-                            15),),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                        itemCount: 8,
-                        itemBuilder: (context, index){
-                          return GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: () {
-
-                            },
-                            child: Container(
-                              //margin: EdgeInsets.only(top: 5.0),
-                              padding: EdgeInsets.all(10),
-                              child: Row(
-                                children: <Widget>[
-                                  Text(
-                                    'jhenanne2315@yahoo.com',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
-                ],
-              ),
+              // Column(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   children: <Widget>[
+              //     Padding(
+              //       padding: EdgeInsets.only(left: 10.0),
+              //       child: Text("Or use Existing E-mail Address (Select One)", style: TextStyle(
+              //           fontWeight: FontWeight.normal,
+              //           color: Colors.black,
+              //           fontSize: MediaQuery.of(context)
+              //               .textScaleFactor *
+              //               15),),
+              //     ),
+              //     Container(
+              //       height: MediaQuery.of(context).size.height,
+              //       child: ListView.builder(
+              //         padding: EdgeInsets.zero,
+              //           itemCount: 8,
+              //           itemBuilder: (context, index){
+              //             return GestureDetector(
+              //               behavior: HitTestBehavior.translucent,
+              //               onTap: () {
+              //
+              //               },
+              //               child: Container(
+              //                 //margin: EdgeInsets.only(top: 5.0),
+              //                 padding: EdgeInsets.all(10),
+              //                 child: Row(
+              //                   children: <Widget>[
+              //                     Text(
+              //                       'jhenanne2315@yahoo.com',
+              //                       style:
+              //                       TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //             );
+              //           }),
+              //     ),
+              //   ],
+              // ),
 
               // Container(
               //   height: 50,

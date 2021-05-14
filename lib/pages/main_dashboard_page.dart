@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:wstar_retailer/Bulletin.dart';
 import 'package:wstar_retailer/POSSIM.dart';
+import 'package:wstar_retailer/login/login_email_screen.dart';
+import 'package:wstar_retailer/models/dito_user.dart';
 import 'package:wstar_retailer/models/retailer.dart';
 import 'package:wstar_retailer/pages/profile/myprofile.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
+import 'package:wstar_retailer/services/Session.dart';
+import 'package:wstar_retailer/services/storage.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -13,29 +17,31 @@ import 'package:wstar_retailer/api_connection/stream_user_api.dart';
 import 'package:wstar_retailer/pages/bulletin/news_feed.dart';
 
 import '../AboutUs.dart';
-import '../Chatroom.dart';
 import '../PurchaseOrder.dart';
 import 'chatroom/chat.dart';
 import 'dashboard/Dashboard.dart';
 
 class MainDashboardPage extends StatefulWidget {
-@override
+
+  @override
 _MainDashboardPageState createState() => _MainDashboardPageState();
 }
 
 class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindingObserver{
 
-  String currentTab = '', nameTab = '';
-  String uid, type, displayName;
-  int _selectedIndex = 0;
-  TextEditingController _controller = new TextEditingController();
-  double amountBalance = 2000.0;
   final formatter = new NumberFormat("#,##0.00#", "en_US");
+  final SecureStorage secureStorage = SecureStorage();
 
   SharedPreferences preferences;
   DatabaseReference profileReference;
 
-  Retailer retailerData;
+  String currentTab = '', nameTab = '';
+  String uid = '', type = '', displayName = '', businessName = '', token = '';
+  int _selectedIndex = 0;
+  TextEditingController _controller = new TextEditingController();
+  double amountBalance = 2000.0;
+
+  DitoUser user;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -50,6 +56,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
         nameTab = "Chatroom";
       }
     });
+
   }
 
   @override
@@ -59,6 +66,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
     nameTab = "Dashboard";
     _controller.text = formatter.format(amountBalance);
     initPrefAndLogin();
+
   }
 
   @override
@@ -98,13 +106,13 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                           SizedBox(
                             height: 10.0,
                           ),
-                          Text('Hi, James',
+                          Text(displayName != null ? "Hi, " + displayName : " ",
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
                               )),
                           Text(
-                            'Retailer',
+                            uid != null ? uid : " ",
                             style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,
@@ -250,7 +258,7 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                           onTap: (){
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) =>
-                                  ProfilePage(myInfo: retailerData),
+                                  ProfilePage(ditoUser: user),
                             ));
                           },
                           child: Row(
@@ -281,9 +289,9 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                           behavior: HitTestBehavior.translucent,
                           onTap: (){
                               setState(() {
-                                Navigator.pop(context);
                                 currentTab = "aboutus";
                                 nameTab = "About Us";
+                                Navigator.pop(context);
                               });
                           },
                           child: Row(
@@ -310,24 +318,30 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
                         SizedBox(
                           height: 20.0,
                         ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 5.0,
-                            ),
-                            ImageIcon(
-                              AssetImage("assets/image/out.png"), size: 30, color: Color(0xFF0B1043),
-                            ),
-                            SizedBox(
-                              width: 15.0,
-                            ),
-                            Text('Log-out',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Color(0xFF0B1043),
-                                )),
-                          ],
+                        GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: (){
+                            showConfirmLogoutAlertDialog(context);
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 5.0,
+                              ),
+                              ImageIcon(
+                                AssetImage("assets/image/out.png"), size: 30, color: Color(0xFF0B1043),
+                              ),
+                              SizedBox(
+                                width: 15.0,
+                              ),
+                              Text('Log-out',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Color(0xFF0B1043),
+                                  )),
+                            ],
+                          ),
                         ),
                         SizedBox(
                           height: 20.0,
@@ -367,7 +381,6 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
     );
   }
 
-  //Widget bodyView(String selectTab, UserModel userModel, User localToken) {
   Widget bodyView(String selectTab) {
     if (selectTab == "dashboard") {
       return DashboardPage();
@@ -376,13 +389,13 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
       setState(() {
         _selectedIndex = 0;
       });
-      return POSSIM(myUID: uid);
+      return POSSIM(myUID: uid, token: token,);
     }
     else if (selectTab == "purchase_order") {
       setState(() {
         _selectedIndex = 0;
       });
-      return PurchaseOrderPage(myUID: uid,);
+      return PurchaseOrderPage(myUID: uid, displayName: businessName, token: token,);
     }
     else if (selectTab == "sales") {
       return SalesPage();
@@ -516,33 +529,134 @@ class _MainDashboardPageState extends State<MainDashboardPage> with WidgetsBindi
 
   void initPrefAndLogin() async {
     preferences = await SharedPreferences.getInstance();
-    profileReference = FirebaseDatabase.instance.reference().child("retailers").child(preferences.getString("myUIDRetailer"));
-    TransactionResult transactionResultForUser = await profileReference.runTransaction((MutableData mutableData) async {
-      return mutableData;
+    user = await Session.getDitoUserDetails();
+    await SecureStorage().readSecureData(key: 'token').then((value) {
+
+      setState(() {
+        displayName = user.details.fName;
+        uid = user.details.uid;
+        token = value;
+        //print(token);
+      });
+
+      return value;
     });
 
-    if(transactionResultForUser.dataSnapshot.value != null){
-      print("initLogin");
+    await FlutterStatusbarcolor.setStatusBarColor(HexColor("#060A33"));
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
 
-      type = transactionResultForUser.dataSnapshot.value["type"];
-      List<String> userEmailLoggedIn = transactionResultForUser.dataSnapshot.value["email"].split("@");
+    //   await StreamUserApi.login(idUser: userEmailLoggedIn[0].toString(),
+    //       fullName: transactionResultForUser.dataSnapshot.value["name"],
+    //       avatar: transactionResultForUser.dataSnapshot.value["avatar"],
+    //       type: transactionResultForUser.dataSnapshot.value["type"],
+    //       uid: transactionResultForUser.dataSnapshot.value["uid"]);
 
-      await StreamUserApi.login(idUser: userEmailLoggedIn[0].toString(),
-          fullName: transactionResultForUser.dataSnapshot.value["name"],
-          avatar: transactionResultForUser.dataSnapshot.value["avatar"],
-          type: transactionResultForUser.dataSnapshot.value["type"],
-          uid: transactionResultForUser.dataSnapshot.value["uid"]);
 
-      // preferences.setString("myUID", transactionResultForUser.dataSnapshot.value["uid"]);
-      uid = transactionResultForUser.dataSnapshot.value["uid"];
-      displayName = transactionResultForUser.dataSnapshot.value["fullName"];
 
-      retailerData = Retailer.fromSnapshot(transactionResultForUser.dataSnapshot);
-      //userName = preferences.getString("userName");
+    //preferences = await SharedPreferences.getInstance();
+    // profileReference = FirebaseDatabase.instance.reference().child("retailers").child(preferences.getString("myUIDRetailer"));
+    // TransactionResult transactionResultForUser = await profileReference.runTransaction((MutableData mutableData) async {
+    //   return mutableData;
+    // });
+    //
+    // if(transactionResultForUser.dataSnapshot.value != null){
+    //   print("initLogin");
+    //
+    //   type = transactionResultForUser.dataSnapshot.value["type"];
+    //   List<String> userEmailLoggedIn = transactionResultForUser.dataSnapshot.value["email"].split("@");
+    //
+    //   await StreamUserApi.login(idUser: userEmailLoggedIn[0].toString(),
+    //       fullName: transactionResultForUser.dataSnapshot.value["name"],
+    //       avatar: transactionResultForUser.dataSnapshot.value["avatar"],
+    //       type: transactionResultForUser.dataSnapshot.value["type"],
+    //       uid: transactionResultForUser.dataSnapshot.value["uid"]);
+    //
+    //   // preferences.setString("myUID", transactionResultForUser.dataSnapshot.value["uid"]);
+    //   uid = transactionResultForUser.dataSnapshot.value["uid"];
+    //   displayName = transactionResultForUser.dataSnapshot.value["fullName"];
+    //   businessName = transactionResultForUser.dataSnapshot.value["businessName"];
+    //
+    //   retailerData = Retailer.fromSnapshot(transactionResultForUser.dataSnapshot);
+    //   //userName = preferences.getString("userName");
+    //
+    //   //_updateStateUser("Active");
+    //   // createChannelWithUsers(userEmailLoggedIn[0].toString());
+    // }
+  }
 
-      //_updateStateUser("Active");
-      // createChannelWithUsers(userEmailLoggedIn[0].toString());
-    }
+  showConfirmLogoutAlertDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = FlatButton(
+      color: HexColor("#0C9E1F"),
+      textColor: Colors.white,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+          side: BorderSide(color: HexColor("#0C9E1F"))
+      ),
+      child: Text("Confirm"),
+      onPressed: () async {
+        secureStorage.deleteSecureData(key: 'token');
+        await preferences.clear();
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+            LoginEmailScreen()), (Route<dynamic> route) => false);
+      },
+    );
+
+    // set up the button
+    Widget cancel = FlatButton(
+      color: HexColor("#FF0000"),
+      textColor: Colors.white,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+          side: BorderSide(color: HexColor("#FF0000"))
+      ),
+      child: Text("Back"),
+      onPressed: () {
+
+        Navigator.of(context).pop();
+      },
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                insetPadding: EdgeInsets.all(10),
+                contentPadding: EdgeInsets.zero,
+                content: SingleChildScrollView(
+                  child: Container(
+                    height: 150,
+                    width: 400,
+                    child: Column(
+                      //crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text("Are you sure you want to logout?", style: TextStyle(fontSize: 18),),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            cancel, SizedBox(width: 30), okButton
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // actions: [
+                //   Center(child: cancel ,),
+                //   okButton,
+                // ],
+              );
+            }
+        );
+
+      },
+    );
   }
 
 }

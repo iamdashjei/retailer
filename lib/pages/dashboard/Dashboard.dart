@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:adobe_xd/pinned.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wstar_retailer/pages/bulletin/news_feed.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
 
-import '../../Bulletin.dart';
-import '../../Chatroom.dart';
 
 class DashboardPage extends StatefulWidget {
 
@@ -27,9 +25,6 @@ class _DashboardPageState extends State<DashboardPage>{
   Widget build(BuildContext context) {
 
     List<Widget> _dashboardPages = <Widget>[
-      SalesPage(),
-      Bulletin(),
-      Chatroom(),
     ];
 
     // TODO: implement build

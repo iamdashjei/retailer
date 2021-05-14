@@ -8,8 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:wstar_retailer/pages/sales/sales.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
-import 'Bulletin.dart';
-import 'Chatroom.dart';
 import 'models/retailer.dart';
 import 'models/siminformation.dart';
 //POSSIMList(),
@@ -99,58 +97,58 @@ class _POSLoadPageState extends State<POSLoad>{
                   ),
                   SizedBox(height: 5),
                   Divider(thickness: 2, endIndent: 10, indent: 10,),
-                  Container(
-                    height: 700,
-                    child: FirebaseAnimatedList(
-                        physics: NeverScrollableScrollPhysics(),
-                        query: saleItems,
-                        reverse: false,
-                        //shrinkWrap: true,
-                        itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                          if(widget.myUID == snapshot.value["uid"] && snapshot.value["status"] == "sold"){
-                            return Column(
-                              children: <Widget>[
-                                ListTile(
-                                  onTap: () {
-
-                                  },
-                                  trailing: Column(
-                                    children: <Widget>[
-                                      SizedBox(height: 5,),
-                                      Container(
-                                        //margin: EdgeInsets.only(left:12.0),
-                                        child: Text(snapshot.value["amount"].toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 25, color: HexColor("##FF0000")),),
-                                      ),
-                                      Text(snapshot.value["offerDescription"].toString(), style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic, fontSize: MediaQuery.of(context).textScaleFactor * 10, color: HexColor("##FF0000")),),
-                                    ],
-                                  ),
-                                  title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text("${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["date"]))}",
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 16)),
-                                    ],
-                                  ),
-                                  subtitle: Row(
-                                    children: [
-                                      Icon(Icons.phone, color: Colors.black,size: 20,),
-                                      SizedBox(width: 5),
-                                      Expanded(child: Text(snapshot.value["mobileNumber"].toString(), style: TextStyle(fontWeight: FontWeight.normal,
-                                          fontStyle: FontStyle.italic, fontSize: MediaQuery.of(context).textScaleFactor * 15,
-                                          color: HexColor("##FF0000")))),
-
-                                      SizedBox(width: 5,),
-                                    ],
-                                  ),
-                                ),
-                                Divider(thickness: 2, endIndent: 10, indent: 10,),
-                              ],
-                            );
-                          } else {
-                            return Container();
-                          }
-                        }),
-                  ),
+                  // Container(
+                  //   height: 700,
+                  //   child: FirebaseAnimatedList(
+                  //       physics: NeverScrollableScrollPhysics(),
+                  //       query: saleItems,
+                  //       reverse: false,
+                  //       //shrinkWrap: true,
+                  //       itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                  //         if(widget.myUID == snapshot.value["uid"] && snapshot.value["status"] == "sold"){
+                  //           return Column(
+                  //             children: <Widget>[
+                  //               ListTile(
+                  //                 onTap: () {
+                  //
+                  //                 },
+                  //                 trailing: Column(
+                  //                   children: <Widget>[
+                  //                     SizedBox(height: 5,),
+                  //                     Container(
+                  //                       //margin: EdgeInsets.only(left:12.0),
+                  //                       child: Text(snapshot.value["amount"].toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 25, color: HexColor("##FF0000")),),
+                  //                     ),
+                  //                     Text(snapshot.value["offerDescription"].toString(), style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic, fontSize: MediaQuery.of(context).textScaleFactor * 10, color: HexColor("##FF0000")),),
+                  //                   ],
+                  //                 ),
+                  //                 title: Row(
+                  //                   mainAxisAlignment: MainAxisAlignment.start,
+                  //                   children: <Widget>[
+                  //                     Text("${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["date"]))}",
+                  //                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).textScaleFactor * 16)),
+                  //                   ],
+                  //                 ),
+                  //                 subtitle: Row(
+                  //                   children: [
+                  //                     Icon(Icons.phone, color: Colors.black,size: 20,),
+                  //                     SizedBox(width: 5),
+                  //                     Expanded(child: Text(snapshot.value["mobileNumber"].toString(), style: TextStyle(fontWeight: FontWeight.normal,
+                  //                         fontStyle: FontStyle.italic, fontSize: MediaQuery.of(context).textScaleFactor * 15,
+                  //                         color: HexColor("##FF0000")))),
+                  //
+                  //                     SizedBox(width: 5,),
+                  //                   ],
+                  //                 ),
+                  //               ),
+                  //               Divider(thickness: 2, endIndent: 10, indent: 10,),
+                  //             ],
+                  //           );
+                  //         } else {
+                  //           return Container();
+                  //         }
+                  //       }),
+                  // ),
                   SizedBox(height: 5),
 
                 ]),

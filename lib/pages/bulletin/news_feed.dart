@@ -79,32 +79,32 @@ class _NewsFeedState extends State<NewsFeed> {
     super.initState();
     //print("User type => " + type);
 
-    postReference = databaseReference.child("post");
-    profileReference = FirebaseDatabase.instance.reference().child("retailers").child(uid);
-    _todoQuery = databaseReference.reference().child("retailers").child(uid);
-    _onMerchantAddedSubscription = _todoQuery.onChildAdded.listen(onEntryAdded);
-    _onMerchantChangedSubscription = _todoQuery.onChildChanged.listen(onEntryChanged);
-
-    _todoUpdateQuery = databaseReference.reference().child("users");
-    _onUserAdded = _todoUpdateQuery.onChildAdded.listen(onEntryUserAdded);
-    _UserUpdate = _todoUpdateQuery.onChildChanged.listen(onEntryUserChanged);
-
-    _postUpdateQuery = databaseReference.child("post");
-    _postUpdate = _postUpdateQuery.onChildChanged.listen(_onEntryPostUpdate);
-
-    postItems = FirebaseDatabase.instance.reference().child("post");
+    // postReference = databaseReference.child("post");
+    // profileReference = FirebaseDatabase.instance.reference().child("retailers").child(uid);
+    // _todoQuery = databaseReference.reference().child("retailers").child(uid);
+    // _onMerchantAddedSubscription = _todoQuery.onChildAdded.listen(onEntryAdded);
+    // _onMerchantChangedSubscription = _todoQuery.onChildChanged.listen(onEntryChanged);
+    //
+    // _todoUpdateQuery = databaseReference.reference().child("users");
+    // _onUserAdded = _todoUpdateQuery.onChildAdded.listen(onEntryUserAdded);
+    // _UserUpdate = _todoUpdateQuery.onChildChanged.listen(onEntryUserChanged);
+    //
+    // _postUpdateQuery = databaseReference.child("post");
+    // _postUpdate = _postUpdateQuery.onChildChanged.listen(_onEntryPostUpdate);
+    //
+    // postItems = FirebaseDatabase.instance.reference().child("post");
   }
 
 
   @override
   void dispose() {
     super.dispose();
-    _onMerchantAddedSubscription.cancel();
-    _onMerchantChangedSubscription.cancel();
-    _onUserAdded.cancel();
-    _UserUpdate.cancel();
-    postController.dispose();
-    _controller.dispose();
+    // _onMerchantAddedSubscription.cancel();
+    // _onMerchantChangedSubscription.cancel();
+    // _onUserAdded.cancel();
+    // _UserUpdate.cancel();
+    // postController.dispose();
+    // _controller.dispose();
 
   }
 
@@ -115,7 +115,7 @@ class _NewsFeedState extends State<NewsFeed> {
 
     if(event.snapshot.value != null){
       setState(() {
-        onlineIds.putIfAbsent(event.snapshot.key, () => event.snapshot.value["status"].toString());
+       // onlineIds.putIfAbsent(event.snapshot.key, () => event.snapshot.value["status"].toString());
       });
 
 
@@ -128,7 +128,7 @@ class _NewsFeedState extends State<NewsFeed> {
     if(event.snapshot.value != null){
       // print(event.snapshot.value["status"]);
       setState(() {
-        onlineIds.update(event.snapshot.key, (v) => event.snapshot.value["status"].toString());
+        //onlineIds.update(event.snapshot.key, (v) => event.snapshot.value["status"].toString());
       });
 
     }
@@ -138,7 +138,7 @@ class _NewsFeedState extends State<NewsFeed> {
 
     if(event.snapshot.value != null){
       setState(() {
-        onlineIds.putIfAbsent(event.snapshot.key, () => event.snapshot.value["status"].toString());
+        //onlineIds.putIfAbsent(event.snapshot.key, () => event.snapshot.value["status"].toString());
       });
 
 
@@ -156,7 +156,7 @@ class _NewsFeedState extends State<NewsFeed> {
     if(event.snapshot.value != null){
       // print(event.snapshot.value["status"]);
       setState(() {
-        onlineIds.update(event.snapshot.key, (v) => event.snapshot.value["status"].toString());
+        //onlineIds.update(event.snapshot.key, (v) => event.snapshot.value["status"].toString());
       });
 
     }
@@ -180,715 +180,192 @@ class _NewsFeedState extends State<NewsFeed> {
   @override
   Widget build(BuildContext context) {
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);;
-
+    return Container();
     //padding: const EdgeInsets.all(8.0),
-    return Scaffold(
-      body: new NotificationListener(
-        child: CustomScrollView(
-          controller: _controller,
-          slivers: <Widget>[
-            SliverList(
-                delegate: new SliverChildListDelegate([
-
-                  Column(
-                      children: <Widget>[
-                        type == "md" ? Container(
-                          height: 60,
-                          // decoration: BoxDecoration(
-                          //   color: Colors.white,
-                          //   boxShadow: [
-                          //     BoxShadow(
-                          //       color: Colors.grey.withOpacity(0.5),
-                          //       spreadRadius: 2,
-                          //       blurRadius: 7,
-                          //       offset: Offset(0, 3), // changes position of shadow
-                          //     ),
-                          //   ],
-                          // ),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 20),
-                              Expanded(
-                                child: TextField(
-                                  controller: postController,
-                                  minLines: 1,
-                                  maxLines: 3,
-                                  onChanged: (text){
-                                    setState(() {
-                                      updatedText = text;
-                                    });
-                                  },
-                                  keyboardType: TextInputType.multiline,
-                                  decoration: InputDecoration(
-                                      hintStyle: TextStyle(color: HexColor("#BFBFBF")),
-                                      border: InputBorder.none,
-                                      hintText: 'Write a post here...'),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  pr.show();
-
-                                  postComment(context);
-
-                                  Future.delayed(Duration(seconds: 2)).then((onvalue) {
-                                    percentage = percentage + 30.0;
-                                    print(percentage);
-
-                                    // pr.update(
-                                    //   progress: percentage,
-                                    //   message: "Please wait...",
-                                    //   progressWidget: Container(
-                                    //       padding: EdgeInsets.all(8.0),
-                                    //       child: CircularProgressIndicator()),
-                                    //   maxProgress: 100.0,
-                                    //   progressTextStyle: TextStyle(
-                                    //       color: Colors.black,
-                                    //       fontSize: 13.0,
-                                    //       fontWeight: FontWeight.w400),
-                                    //   messageTextStyle: TextStyle(
-                                    //       color: Colors.black,
-                                    //       fontSize: 19.0,
-                                    //       fontWeight: FontWeight.w600),
-                                    // );
-
-                                  });
-
-                                  Future.delayed(Duration(seconds: 10)).then((onValue) {
-                                    print("PR status  ${pr.isShowing()}");
-                                    if (pr.isShowing())
-                                      pr.hide().then((isHidden) {
-                                        print(isHidden);
-                                        // _controller.animateTo(0.0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-                                      });
-                                    print("PR status  ${pr.isShowing()}");
-                                  });
-                                },
-                                child: updatedText != null && updatedText != "" ? Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  child: Icon(
-                                    Icons.send,
-                                    color: Colors.blue,
-                                    size: 30.0,
-                                  ),
-                                ) : Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  child: Icon(
-                                    Icons.send,
-                                    color: Colors.grey,
-                                    size: 30.0,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ) : Container(),
-                        type == "md" && images.length > 0 ? Container(
-                          width: 200,
-                          height: images.length > 3 ? 200 : 75,
-                          padding: const EdgeInsets.all(8),
-                          child: buildGridView(),
-                        ) : Container(),
-                        type == "md" && videos.length > 0 ? Container(
-                          width: 400,
-                          height: 150,
-                          padding: const EdgeInsets.all(8),
-                          child: buildVideoGridView(),
-                        ) : Container(),
-                        type == "md" ? Divider() : Container(),
-                        type == "md" ? _addPostOptions() : Container(),
-                        Container(
-                            child: FirebaseAnimatedList(
-                              //controller: _controller,
-                                physics: NeverScrollableScrollPhysics(),
-                                query: postItems,
-                                reverse: true,
-                                shrinkWrap: true,
-                                itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-                                  if (snapshot == null) {
-                                    return Expanded(
-                                      child: Loader(),
-                                    );
-                                  } else {
-                                    // if(_controller.position.pixels == _controller.position.maxScrollExtent){
-                                    //     setState(() {
-                                    //       _controller.jumpTo(_controller.position.minScrollExtent);
-                                    //     });
-                                    // }
-                                    _listOfImages = [];
-                                    videosStrUrl = [];
-                                    Map<dynamic, dynamic> multipleImgUrl = snapshot.value["multipleImgUrl"];
-                                    Map<dynamic, dynamic> videoUrl = snapshot.value["videoUrl"];
-                                    if(multipleImgUrl != null){
-                                      multipleImgUrl.forEach((k, v) => _listOfImages.add(NetworkImage(v.toString())));
-                                    }
-
-                                    if(videoUrl != null){
-                                      videoUrl.forEach((k, v) => videosStrUrl.add(v.toString()));
-                                    }
-                                    return _getPost(snapshot, context, _listOfImages, videosStrUrl);
-                                    // if(snapshot.value["multipleImgUrl"] != null){
-                                    //
-                                    //   Map<dynamic, dynamic> multipleImgUrl = snapshot.value["multipleImgUrl"];
-                                    //   multipleImgUrl.forEach((k, v) => _listOfImages.add(NetworkImage(v.toString())));
-                                    //   return _getPost(snapshot, context, _listOfImages);
-                                    // } else {
-                                    //   return _getPost(snapshot, context, _listOfImages);
-                                    // }
-                                    //_posts.add(_getPost(snapshot));
-                                    //print(snapshot.value["multipleImgUrl"].toString());
-                                    //return _getPost(snapshot, context);
-                                  }
-                                }
-                            )
-                        ),
-                      ]
-                  )
-                ]
-                ))
-          ],
-        ), onNotification: (notification) {
-        if(notification is ScrollEndNotification){
-          //print(_controller.position.pixels);
-          //print(_controller.position.maxScrollExtent);
-          if(_controller.position.pixels == _controller.position.maxScrollExtent){
-            //_controller.jumpTo(0.0);
-            //print("Reached the end scroll");
-            // Future.delayed(Duration(milliseconds: 1), () {
-            //   _controller.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-            // });
-          }
-          return true;
-        } else {
-          return false;
-        }
-      },
-      ),
-    );
     // return Scaffold(
-    //   resizeToAvoidBottomPadding: false,
-    //   backgroundColor: HexColor("#ECECEC"),
-    //   body: SingleChildScrollView(
-    //     child: Column(
-    //     children: [
-    //       Container(
-    //         height: 80,
-    //         decoration: BoxDecoration(
-    //           color: Colors.white,
-    //           boxShadow: [
-    //             BoxShadow(
-    //               color: Colors.grey.withOpacity(0.5),
-    //               spreadRadius: 2,
-    //               blurRadius: 7,
-    //               offset: Offset(0, 3), // changes position of shadow
-    //             ),
-    //           ],
-    //         ),
-    //         child: Row(
-    //           children: [
-    //             SizedBox(width: 20),
-    //             // CircleAvatar(
-    //             //   backgroundColor: Colors.transparent,
-    //             //   backgroundImage: updatedImage != null ? NetworkImage("$updatedImage") : NetworkImage("http://tmcac.outerbox.net/storage/default.png"),
-    //             //   // child: SvgPicture.asset('assets/image/profiles.svg',
-    //             //   //     width: 25, height: 25),
-    //             // ),
-    //             //SizedBox(width: 8),
-    //             Expanded(
-    //               child: TextField(
-    //                 controller: postController,
-    //                 minLines: 1,
-    //                 maxLines: 3,
-    //                 onChanged: (text){
-    //                   setState(() {
-    //                     updatedText = text;
-    //                   });
-    //                 },
-    //                 keyboardType: TextInputType.multiline,
-    //                 decoration: InputDecoration(
-    //                     hintStyle: TextStyle(color: HexColor("#BFBFBF")),
-    //                     border: InputBorder.none,
-    //                     hintText: 'Write a post here...'),
-    //               ),
-    //             ),
-    //             GestureDetector(
-    //               onTap: () {
-    //                 postComment();
-    //               },
-    //               child: updatedText != null && updatedText != "" ? Container(
-    //                 margin: EdgeInsets.only(right: 10),
-    //                 child: Icon(
-    //                   Icons.send,
-    //                   color: Colors.blue,
-    //                   size: 30.0,
-    //                 ),
-    //               ) : Container(
-    //                 margin: EdgeInsets.only(right: 10),
-    //                 child: Icon(
-    //                   Icons.send,
-    //                   color: Colors.grey,
-    //                   size: 30.0,
-    //                 ),
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //       SizedBox(height: 3.0,),
-    //       Align(
-    //         alignment: Alignment.topCenter,
-    //         child: Container(
-    //           child: new FirebaseAnimatedList(
-    //             physics: NeverScrollableScrollPhysics(),
-    //             query: postItems,
-    //             reverse: true,
-    //             shrinkWrap: true,
-    //             itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
-    //               if (snapshot == null) {
-    //                 return Expanded(
-    //                   child: Loader(),
-    //                 );
-    //               } else {
-    //                 if(snapshot.value["status"] != "deleted"){
+    //   body: new NotificationListener(
+    //     child: CustomScrollView(
+    //       controller: _controller,
+    //       slivers: <Widget>[
+    //         SliverList(
+    //             delegate: new SliverChildListDelegate([
     //
-    //
-    //                   return Container(
-    //                     color: Colors.white,
-    //                     margin: const EdgeInsets.only(bottom: 10.0),
-    //                     // constraints: BoxConstraints.tightFor(
-    //                     //   height: 90,
-    //                     // ),
-    //                     child: Padding(
-    //                       padding: const EdgeInsets.all(8.0),
-    //                       child: Column(
-    //                         crossAxisAlignment: CrossAxisAlignment.start,
-    //                         mainAxisAlignment: MainAxisAlignment.start,
+    //               Column(
+    //                   children: <Widget>[
+    //                     type == "md" ? Container(
+    //                       height: 60,
+    //                       // decoration: BoxDecoration(
+    //                       //   color: Colors.white,
+    //                       //   boxShadow: [
+    //                       //     BoxShadow(
+    //                       //       color: Colors.grey.withOpacity(0.5),
+    //                       //       spreadRadius: 2,
+    //                       //       blurRadius: 7,
+    //                       //       offset: Offset(0, 3), // changes position of shadow
+    //                       //     ),
+    //                       //   ],
+    //                       // ),
+    //                       child: Row(
     //                         children: [
-    //
-    //                           Row(
-    //                             children: [
-    //
-    //                               // CircleAvatar(
-    //                               //   radius: 20,
-    //                               //   backgroundColor: Colors.transparent,
-    //                               //   backgroundImage: snapshot.value["username"] == _auth.currentUser.displayName ? NetworkImage("$updatedImage") : NetworkImage(userAvatarUrl(snapshot.value["userId"])),
-    //                               //   // child: SvgPicture.asset(
-    //                               //   //     'assets/image/profiles.svg'
-    //                               //   // ),
-    //                               // ),
-    //                               Expanded(
-    //                                 child: Column(
-    //                                   crossAxisAlignment: CrossAxisAlignment.start,
-    //                                   mainAxisAlignment: MainAxisAlignment.start,
-    //                                   children: [
-    //                                     // Image.asset('assets/image/online_presence2.png', width: 15, height: 15),
-    //                                     // SizedBox(
-    //                                     //   height: 4,
-    //                                     // ),
-    //                                     // Container(),
-    //
-    //                                     Row(
-    //                                       mainAxisAlignment: MainAxisAlignment.start,
-    //                                       crossAxisAlignment: CrossAxisAlignment.start,
-    //                                       children: [
-    //                                         presence(snapshot.value["userId"]),
-    //                                      //   userStatus(snapshot.value["userId"]).toString() == "yes" ? Image.asset('assets/image/online_presence2.png', width: 20, height: 20) : Image.asset('assets/image/offline_presence.png', width: 20, height: 20),
-    //
-    //                                         SizedBox(width: 3),
-    //                                         Text(
-    //                                           "${snapshot.value["username"]}",
-    //                                           style: TextStyle(
-    //                                               color: HexColor("#2C7BE3"),
-    //                                               fontSize: MediaQuery.of(context).textScaleFactor * 15,
-    //                                               fontWeight: FontWeight.bold),
-    //                                         ),
-    //                                         Container(
-    //                                           child: GestureDetector(
-    //                                               child: Icon(Icons.arrow_drop_down_outlined, size: 20.0,),
-    //                                               onTapDown: (TapDownDetails position){
-    //
-    //                                                 if(_auth.currentUser.displayName == snapshot.value["username"]){
-    //                                                   showMenu(
-    //                                                     position: new RelativeRect.fromLTRB(position.globalPosition.dx, position.globalPosition.dy, 0, 0),
-    //                                                     context: context,
-    //                                                     items: <PopupMenuEntry>[
-    //                                                       PopupMenuItem(
-    //                                                         value: 1,
-    //                                                         child: GestureDetector(
-    //                                                           onTap: (){
-    //                                                             Navigator.pop(context);
-    //
-    //                                                             showDialog(
-    //                                                                 context: context,
-    //                                                                 builder: (BuildContext context){
-    //                                                                   return AlertDialog(
-    //                                                                     content: Stack(
-    //                                                                       overflow: Overflow.visible,
-    //                                                                       children: <Widget>[
-    //                                                                         Positioned(
-    //                                                                           right: -40.0,
-    //                                                                           top: -40.0,
-    //                                                                           child: InkResponse(
-    //                                                                             onTap: () {
-    //                                                                               Navigator.of(context).pop();
-    //                                                                             },
-    //                                                                             child: CircleAvatar(
-    //                                                                               child: Icon(Icons.close),
-    //                                                                               backgroundColor: Colors.blueAccent,
-    //                                                                             ),
-    //                                                                           ),
-    //                                                                         ),
-    //                                                                         Form(
-    //                                                                           child: Column(
-    //                                                                             mainAxisSize: MainAxisSize.min,
-    //                                                                             children: <Widget>[
-    //                                                                               Padding(
-    //                                                                                 padding: EdgeInsets.all(8.0),
-    //                                                                                 child: Text("Edit Post"),
-    //                                                                               ),
-    //                                                                               Padding(
-    //                                                                                 padding: EdgeInsets.all(8.0),
-    //                                                                                 child: TextFormField(
-    //                                                                                   controller: editController,
-    //                                                                                   cursorColor: Colors.black,
-    //                                                                                   // keyboardType: inputType,
-    //                                                                                   decoration: new InputDecoration(
-    //                                                                                       border: InputBorder.none,
-    //                                                                                       focusedBorder: InputBorder.none,
-    //                                                                                       enabledBorder: InputBorder.none,
-    //                                                                                       errorBorder: InputBorder.none,
-    //                                                                                       disabledBorder: InputBorder.none,
-    //                                                                                       contentPadding:
-    //                                                                                       EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-    //                                                                                       hintText: snapshot.value["postDescription"]),
-    //                                                                                 ),
-    //                                                                               ),
-    //                                                                               Padding(
-    //                                                                                 padding: const EdgeInsets.all(8.0),
-    //                                                                                 child: RaisedButton(
-    //                                                                                   child: Text("Save"),
-    //                                                                                   onPressed: () {
-    //                                                                                     editPost(snapshot, editController.text, context);
-    //                                                                                   },
-    //                                                                                 ),
-    //                                                                               )
-    //                                                                             ],
-    //                                                                           ),
-    //                                                                         ),
-    //                                                                       ],
-    //                                                                     ),
-    //                                                                   );
-    //                                                                 }
-    //                                                             );
-    //                                                           },
-    //                                                           child: Row(
-    //                                                             children: <Widget>[
-    //                                                               Icon(Icons.edit),
-    //                                                               Text("Edit"),
-    //                                                             ],
-    //                                                           ),
-    //                                                         ),
-    //                                                       ),
-    //                                                       PopupMenuItem(
-    //                                                         value: 2,
-    //                                                         child: GestureDetector(
-    //                                                           onTap: (){
-    //                                                             Navigator.pop(context);
-    //                                                             showDialog(
-    //                                                                 context: context,
-    //                                                                 builder: (BuildContext context){
-    //                                                                   return AlertDialog(
-    //                                                                     content: Stack(
-    //                                                                       overflow: Overflow.visible,
-    //                                                                       children: <Widget>[
-    //                                                                         Positioned(
-    //                                                                           right: -40.0,
-    //                                                                           top: -40.0,
-    //                                                                           child: InkResponse(
-    //                                                                             onTap: () {
-    //                                                                               Navigator.of(context).pop();
-    //                                                                             },
-    //                                                                             child: CircleAvatar(
-    //                                                                               child: Icon(Icons.close),
-    //                                                                               backgroundColor: Colors.blueAccent,
-    //                                                                             ),
-    //                                                                           ),
-    //                                                                         ),
-    //                                                                         Form(
-    //                                                                           child: Column(
-    //                                                                             mainAxisSize: MainAxisSize.min,
-    //                                                                             children: <Widget>[
-    //                                                                               Padding(
-    //                                                                                 padding: EdgeInsets.all(8.0),
-    //                                                                                 child: Text("Are you sure to delete this post?"),
-    //                                                                               ),
-    //                                                                               Row(children: [
-    //                                                                                 Padding(
-    //                                                                                   padding: const EdgeInsets.all(8.0),
-    //                                                                                   child: RaisedButton(
-    //                                                                                     child: Text("Yes"),
-    //                                                                                     onPressed: () {
-    //                                                                                       deletePost(snapshot, context);
-    //                                                                                     },
-    //                                                                                   ),
-    //                                                                                 ),
-    //                                                                                 Padding(
-    //                                                                                   padding: const EdgeInsets.all(8.0),
-    //                                                                                   child: RaisedButton(
-    //                                                                                     child: Text("No"),
-    //                                                                                     onPressed: () {
-    //                                                                                       Navigator.pop(context);
-    //                                                                                     },
-    //                                                                                   ),
-    //                                                                                 )
-    //                                                                               ],)
-    //
-    //                                                                             ],
-    //                                                                           ),
-    //                                                                         ),
-    //                                                                       ],
-    //                                                                     ),
-    //                                                                   );
-    //                                                                 }
-    //                                                             );
-    //                                                           },
-    //                                                           child: Row(
-    //                                                             children: <Widget>[
-    //                                                               Icon(Icons.delete),
-    //                                                               Text("Delete"),
-    //                                                             ],
-    //                                                           ),
-    //                                                         ),
-    //                                                       ),
-    //                                                     ],
-    //                                                   );
-    //                                                 }
-    //
-    //                                               }
-    //
-    //                                           ),
-    //
-    //                                         ),
-    //                                       ],
-    //                                     ),
-    //                                     Padding(
-    //                                       padding: const EdgeInsets.fromLTRB(5.0, 2.0, 0.0, 2.0),
-    //                                       child: Text(
-    //                                         "${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["postTime"]))}",
-    //                                         style: TextStyle(
-    //                                           fontSize: MediaQuery.of(context).textScaleFactor * 11,
-    //                                           color: HexColor("#C8C8C8"),
-    //                                         ),
-    //                                       ),
-    //                                     ),
-    //
-    //                                     Padding(
-    //                                       padding: const EdgeInsets.fromLTRB(5.0, 4.0, 0.0, 2.0),
-    //                                       child: ReadMoreText(
-    //                                         "${snapshot.value["postDescription"]}",
-    //                                         trimLines: 20,
-    //                                         colorClickableText: HexColor("#C8C8C8"),
-    //                                         trimMode: TrimMode.Line,
-    //                                         trimCollapsedText: 'read more',
-    //                                         trimExpandedText: 'show less',
-    //                                         moreStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: HexColor("#C8C8C8")),
-    //                                       ),
-    //                                     //   child: Text("${snapshot.value["postDescription"]}", style: TextStyle(
-    //                                     //   fontSize: MediaQuery.of(context).textScaleFactor * 14,
-    //                                     //   color: HexColor("#3B3B3B"),
-    //                                     // ),),
-    //                                     ),
-    //
-    //                                   ],
-    //                                 ),
-    //                               ),
-    //
-    //
-    //                             ],
+    //                           SizedBox(width: 20),
+    //                           Expanded(
+    //                             child: TextField(
+    //                               controller: postController,
+    //                               minLines: 1,
+    //                               maxLines: 3,
+    //                               onChanged: (text){
+    //                                 setState(() {
+    //                                   updatedText = text;
+    //                                 });
+    //                               },
+    //                               keyboardType: TextInputType.multiline,
+    //                               decoration: InputDecoration(
+    //                                   hintStyle: TextStyle(color: HexColor("#BFBFBF")),
+    //                                   border: InputBorder.none,
+    //                                   hintText: 'Write a post here...'),
+    //                             ),
     //                           ),
-    //                           SizedBox(
-    //                             height: 5,
-    //                           ),
+    //                           GestureDetector(
+    //                             onTap: () {
+    //                               pr.show();
     //
-    //                           //Text("${countLikes(snapshot.key)}"),
-    //                           //Text("2 Likes"),
-    //                           Row(
-    //                             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                             children: [
-    //                               Expanded(
-    //                                 child: ButtonTheme(
-    //                                   minWidth: 20.0,
-    //                                   height: 35.0,
-    //                                   child: RaisedButton(
-    //                                     color: buttonCommentColor(snapshot),
-    //                                     shape: RoundedRectangleBorder(
-    //                                         borderRadius: BorderRadius.circular(5.0),
-    //                                         side: BorderSide(color: Colors.black12)),
-    //                                     onPressed: () {
+    //                               postComment(context);
     //
-    //                                       PostDetailsModel postDetailModel = new PostDetailsModel(
-    //                                           author: snapshot.value["username"],
-    //                                           body: "Caption",
-    //                                           comments: userComments(snapshot),
-    //                                           id: snapshot.key,
-    //                                           imageURL:  "assets/image/outerbox_bg.png",
-    //                                           postTime: "${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["postTime"]))}",
-    //                                           reacts: likeReacts(snapshot),
-    //                                           summary: snapshot.value["postDescription"],
-    //                                           title: snapshot.value["username"]
-    //                                       );
-    //                                       Navigator.of(context).push(MaterialPageRoute(
-    //                                         builder: (context) =>
-    //                                             CommentPage(domain: domain, postData: postDetailModel),
-    //                                       ));
-    //                                     },
-    //                                     child: Text(
-    //                                       userComments(snapshot).length != 0 ? "Comment (" + userComments(snapshot).length.toString() + ")": "Comment",
-    //                                       style: TextStyle(
-    //                                           fontWeight: FontWeight.bold,
-    //                                           color: buttonCommentTextColor(snapshot),
-    //                                           fontSize: MediaQuery.of(context)
-    //                                               .textScaleFactor *
-    //                                               14),
-    //                                     ),
-    //                                   ),
-    //                                 )
+    //                               Future.delayed(Duration(seconds: 2)).then((onvalue) {
+    //                                 percentage = percentage + 30.0;
+    //                                 print(percentage);
     //
+    //                                 // pr.update(
+    //                                 //   progress: percentage,
+    //                                 //   message: "Please wait...",
+    //                                 //   progressWidget: Container(
+    //                                 //       padding: EdgeInsets.all(8.0),
+    //                                 //       child: CircularProgressIndicator()),
+    //                                 //   maxProgress: 100.0,
+    //                                 //   progressTextStyle: TextStyle(
+    //                                 //       color: Colors.black,
+    //                                 //       fontSize: 13.0,
+    //                                 //       fontWeight: FontWeight.w400),
+    //                                 //   messageTextStyle: TextStyle(
+    //                                 //       color: Colors.black,
+    //                                 //       fontSize: 19.0,
+    //                                 //       fontWeight: FontWeight.w600),
+    //                                 // );
+    //
+    //                               });
+    //
+    //                               Future.delayed(Duration(seconds: 10)).then((onValue) {
+    //                                 print("PR status  ${pr.isShowing()}");
+    //                                 if (pr.isShowing())
+    //                                   pr.hide().then((isHidden) {
+    //                                     print(isHidden);
+    //                                     // _controller.animateTo(0.0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    //                                   });
+    //                                 print("PR status  ${pr.isShowing()}");
+    //                               });
+    //                             },
+    //                             child: updatedText != null && updatedText != "" ? Container(
+    //                               margin: EdgeInsets.only(right: 10),
+    //                               child: Icon(
+    //                                 Icons.send,
+    //                                 color: Colors.blue,
+    //                                 size: 30.0,
     //                               ),
-    //                               SizedBox(width: 20),
-    //                               Expanded(
-    //                                 child: ButtonTheme(
-    //                                   minWidth: 50,
-    //                                   height: 35.0,
-    //                                   child: RaisedButton(
-    //                                     color: buttonColor(snapshot),
-    //                                     shape: RoundedRectangleBorder(
-    //                                         borderRadius: BorderRadius.circular(5.0),
-    //                                         side: BorderSide(color: Colors.black12)),
-    //                                     onPressed: () {
-    //                                       likePost(snapshot.key, snapshot);
-    //
-    //                                       //                                      if (postReference.child(snapshot.key).child("like").equalTo(_auth.currentUser.uid) != null) {
-    //                                       //
-    //                                       //                                        postReference.child(snapshot.key).child("like").push().set(_auth.currentUser.uid);
-    //                                       //                                      }
-    //                                     },
-    //                                     child: Text(
-    //                                       buttonText(snapshot) + likeCount(snapshot),
-    //                                       style: TextStyle(
-    //                                           fontWeight: FontWeight.bold,
-    //                                           color: buttonTextColor(snapshot),
-    //                                           fontSize: MediaQuery.of(context)
-    //                                               .textScaleFactor *
-    //                                               14),
-    //                                     ),
-    //                                   ),
-    //                                 ),
-    //
+    //                             ) : Container(
+    //                               margin: EdgeInsets.only(right: 10),
+    //                               child: Icon(
+    //                                 Icons.send,
+    //                                 color: Colors.grey,
+    //                                 size: 30.0,
     //                               ),
-    //
-    //                             ],
-    //                           ),
-    //                           SizedBox(
-    //                             height: 7,
-    //                           ),
-    //                           // userComments(snapshot).length > 0  ?
-    //                           // getTheLatestComment(snapshot, context) : Container(),
-    //                           snapshot.value["comments"] != null ? getTheLatestComment(snapshot, context) : Container(),
-    //                           Divider(),
-    //                           SizedBox(
-    //                             height: 5,
-    //                           ),
-    //                           Row(
-    //                             children: [
-    //                               // CircleAvatar(
-    //                               //   radius: 20,
-    //                               //   backgroundColor: Colors.transparent,
-    //                               //   backgroundImage: NetworkImage("$updatedImage"),
-    //                               // ),
-    //                               SizedBox(
-    //                                 width: 5,
-    //                               ),
-    //                               Expanded(
-    //                                 child: TextField(
-    //                                   onTap: (){
-    //                                     PostDetailsModel postDetailModel = new PostDetailsModel(
-    //                                         author: snapshot.value["username"],
-    //                                         body: "Caption",
-    //                                         comments: userComments(snapshot),
-    //                                         id: snapshot.key,
-    //                                         imageURL:  "assets/image/outerbox_bg.png",
-    //                                         postTime: "${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["postTime"]))}",
-    //                                         reacts: likeReacts(snapshot),
-    //                                         summary: snapshot.value["postDescription"],
-    //                                         title: snapshot.value["username"]
-    //                                     );
-    //                                     Navigator.of(context).push(MaterialPageRoute(
-    //                                       builder: (context) =>
-    //                                           CommentPage(domain: domain, postData: postDetailModel),
-    //                                     ));
-    //                                   },
-    //                                   controller: commentController,
-    //                                   minLines: 1,
-    //                                   maxLines: 3,
-    //                                   keyboardType: TextInputType.multiline,
-    //                                   decoration: InputDecoration(
-    //                                       hintStyle: TextStyle(color: HexColor("#2C7BE3"), fontSize: MediaQuery.of(context)
-    //                                           .textScaleFactor *
-    //                                           14),
-    //                                       border: new OutlineInputBorder(
-    //                                         borderRadius: BorderRadius.circular(5.0),
-    //                                         borderSide: BorderSide(
-    //                                           width: 0,
-    //                                           style: BorderStyle.solid,
-    //                                         ),
-    //                                       ),
-    //                                       contentPadding: EdgeInsets.all(10),
-    //                                       hintText: ' Write a comment...'),
-    //                                 ),
-    //                               ),
-    //                               // GestureDetector(
-    //                               //   onTap: () {
-    //                               //     PostDetailsModel postDetailModel = new PostDetailsModel(
-    //                               //         author: snapshot.value["username"],
-    //                               //         body: "Caption",
-    //                               //         comments: userComments(snapshot),
-    //                               //         id: snapshot.key,
-    //                               //         imageURL:  "assets/image/outerbox_bg.png",
-    //                               //         postTime: "${new DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.parse(snapshot.value["postTime"]))}",
-    //                               //         reacts: likeReacts(snapshot),
-    //                               //         summary: snapshot.value["postDescription"],
-    //                               //         title: snapshot.value["username"]
-    //                               //     );
-    //                               //     userComment(postDetailModel, commentController);
-    //                               //   },
-    //                               //   child: Container(
-    //                               //     margin: EdgeInsets.only(right: 10),
-    //                               //     child: Icon(
-    //                               //       Icons.send,
-    //                               //       color: Colors.blue,
-    //                               //       size: 30.0,
-    //                               //     ),
-    //                               //   ),
-    //                               // ),
-    //                             ],
+    //                             ),
     //                           ),
     //                         ],
     //                       ),
-    //                     ),
-    //                   );
-    //                 } else {
-    //                   return Container();
-    //                 }
+    //                     ) : Container(),
+    //                     type == "md" && images.length > 0 ? Container(
+    //                       width: 200,
+    //                       height: images.length > 3 ? 200 : 75,
+    //                       padding: const EdgeInsets.all(8),
+    //                       child: buildGridView(),
+    //                     ) : Container(),
+    //                     type == "md" && videos.length > 0 ? Container(
+    //                       width: 400,
+    //                       height: 150,
+    //                       padding: const EdgeInsets.all(8),
+    //                       child: buildVideoGridView(),
+    //                     ) : Container(),
+    //                     type == "md" ? Divider() : Container(),
+    //                     type == "md" ? _addPostOptions() : Container(),
+    //                     Container(
+    //                         child: FirebaseAnimatedList(
+    //                           //controller: _controller,
+    //                             physics: NeverScrollableScrollPhysics(),
+    //                             query: postItems,
+    //                             reverse: true,
+    //                             shrinkWrap: true,
+    //                             itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+    //                               if (snapshot == null) {
+    //                                 return Expanded(
+    //                                   child: Loader(),
+    //                                 );
+    //                               } else {
+    //                                 // if(_controller.position.pixels == _controller.position.maxScrollExtent){
+    //                                 //     setState(() {
+    //                                 //       _controller.jumpTo(_controller.position.minScrollExtent);
+    //                                 //     });
+    //                                 // }
+    //                                 _listOfImages = [];
+    //                                 videosStrUrl = [];
+    //                                 Map<dynamic, dynamic> multipleImgUrl = snapshot.value["multipleImgUrl"];
+    //                                 Map<dynamic, dynamic> videoUrl = snapshot.value["videoUrl"];
+    //                                 if(multipleImgUrl != null){
+    //                                   multipleImgUrl.forEach((k, v) => _listOfImages.add(NetworkImage(v.toString())));
+    //                                 }
     //
-    //               }
-    //             },
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ), ),
+    //                                 if(videoUrl != null){
+    //                                   videoUrl.forEach((k, v) => videosStrUrl.add(v.toString()));
+    //                                 }
+    //                                 return _getPost(snapshot, context, _listOfImages, videosStrUrl);
+    //                                 // if(snapshot.value["multipleImgUrl"] != null){
+    //                                 //
+    //                                 //   Map<dynamic, dynamic> multipleImgUrl = snapshot.value["multipleImgUrl"];
+    //                                 //   multipleImgUrl.forEach((k, v) => _listOfImages.add(NetworkImage(v.toString())));
+    //                                 //   return _getPost(snapshot, context, _listOfImages);
+    //                                 // } else {
+    //                                 //   return _getPost(snapshot, context, _listOfImages);
+    //                                 // }
+    //                                 //_posts.add(_getPost(snapshot));
+    //                                 //print(snapshot.value["multipleImgUrl"].toString());
+    //                                 //return _getPost(snapshot, context);
+    //                               }
+    //                             }
+    //                         )
+    //                     ),
+    //                   ]
+    //               )
+    //             ]
+    //             ))
+    //       ],
+    //     ), onNotification: (notification) {
+    //     if(notification is ScrollEndNotification){
+    //       //print(_controller.position.pixels);
+    //       //print(_controller.position.maxScrollExtent);
+    //       if(_controller.position.pixels == _controller.position.maxScrollExtent){
+    //         //_controller.jumpTo(0.0);
+    //         //print("Reached the end scroll");
+    //         // Future.delayed(Duration(milliseconds: 1), () {
+    //         //   _controller.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    //         // });
+    //       }
+    //       return true;
+    //     } else {
+    //       return false;
+    //     }
+    //   },
+    //   ),
     // );
+
   }
 
   void postComment(BuildContext context) async {

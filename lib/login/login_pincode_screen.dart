@@ -1,14 +1,20 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wstar_retailer/models/dito_user.dart';
 import 'package:wstar_retailer/pages/main_dashboard_page.dart';
+import 'package:wstar_retailer/services/Session.dart';
+import 'package:wstar_retailer/services/storage.dart';
 import 'package:wstar_retailer/util/hex_color.dart';
+import 'package:http/http.dart' as http;
+
+import 'login_email_screen.dart';
 
 class LoginPinCodeScreen extends StatefulWidget {
   final String email;
@@ -19,12 +25,16 @@ class LoginPinCodeScreen extends StatefulWidget {
 }
 
 class LoginPinCodeState extends State<LoginPinCodeScreen>{
-  bool isFirstPin = false, isSecondPin = false, isThirdPin = false, isFourthPin = false;
-  String firstPin = "", secondPin = "", thirdPin = "", fourthPin = "";
+  bool isFirstPin = false, isSecondPin = false, isThirdPin = false, isFourthPin = false, isFifthPin = false, isSixthPin = false;
+  String firstPin = "", secondPin = "", thirdPin = "", fourthPin = "", fifthPin = "", sixthPin = "";
   String allPinCombined = "";
+  String pinCode = "123456";
+
   SharedPreferences pref;
 
   final databaseReference = FirebaseDatabase.instance.reference();
+  final SecureStorage secureStorage = SecureStorage();
+
   StreamSubscription<Event> _onRetailerAdded;
   StreamSubscription<Event>  _onRetailUpdate;
   Query _todoQuery;
@@ -32,6 +42,7 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
   Map<String, String> emailAndStatus = new HashMap<String, String>();
   Map<String, String> emailAndUID = new HashMap<String, String>();
 
+  bool isSuccess = false;
 
   @override
   void initState() {
@@ -39,6 +50,7 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
     _todoQuery = databaseReference.reference().child("retailers");
     _onRetailerAdded = _todoQuery.onChildAdded.listen(onEntryRetailerAdded);
     _onRetailUpdate = _todoQuery.onChildChanged.listen(onEntryRetailerChanged);
+
     loadData();
   }
 
@@ -53,11 +65,45 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
     pref = await SharedPreferences.getInstance();
   }
 
-  BoxDecoration get _pinPutDecoration {
-    return BoxDecoration(
-      border: Border.all(color: Colors.deepPurpleAccent),
-      borderRadius: BorderRadius.circular(15.0),
+  Future<DitoUser> login(String uid, String pinCode) async {
+
+    var body = new Map<String, dynamic>();
+    body['uid'] = uid;
+    body['password'] = pinCode;
+
+    final response = await http.post(
+      Uri.https('api.wstarict.com', 'api/v1/public/login'), body: body
     );
+
+    print("Status code => "+ response.statusCode.toString());
+    //print("json body "+ response.body);
+    if(response.statusCode == 200){
+      //print(response.body);
+      var data = json.decode(response.body);
+      DitoUser ditoUser = DitoUser.fromJson(data);
+      //String jsonUser = jsonEncode(ditoUser);
+
+      //print(ditoUser.details.assignedTeamsSubd);
+      //print(ditoUser.details.assignedTeamsDsp);
+      Session.setDitoUserDetails(user: response.body);
+      secureStorage.writeSecureData(key: 'token', value: ditoUser.accessToken);
+
+      //var testData = jsonDecode(response.body);
+      //DitoUser newDitoUser = DitoUser.fromJson(testData);
+      //print(data);
+      //print(testData);
+      //Map<String, dynamic> testMap = new HashMap<String, dynamic>();
+      //testMap.putIfAbsent("access_token", () => ditoUser.accessToken);
+      //print(testMap);
+      //DitoUser newUser = DitoUser.fromJson(testData);
+      // print(newUser.toJson());
+      isSuccess = true;
+      return ditoUser;
+    } else {
+      isSuccess = false;
+      throw Exception('Login Failure');
+
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -86,7 +132,14 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
                   children: [
                     Text(widget.email, style: TextStyle(color: Colors.grey), maxLines: 2,),
                     SizedBox(width: 2,),
-                    Text('Change E-mail', style: TextStyle(color: Color(0xFF0B1043)),),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                            LoginEmailScreen()), (Route<dynamic> route) => false);
+                      },
+                      child: Text('Change UID', style: TextStyle(color: Color(0xFF0B1043)),),
+                    ),
+
                   ],
                 ),
                 SizedBox(
@@ -96,7 +149,7 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
                   child: Padding(
                     padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: Text('Enter your 4 digit PIN', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0B1043))),
+                    child: Text('Enter your 6 digit PIN', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0B1043))),
                   ),
                 ),
                 SizedBox(
@@ -105,10 +158,7 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // PinCodeHolder(height: height, width: width, selectedIndex: selectedIndex, index: 0,),
-                    // PinCodeHolder(height: height, width: width, selectedIndex: selectedIndex, index: 1,),
-                    // PinCodeHolder(height: height, width: width, selectedIndex: selectedIndex, index: 2,),
-                    // PinCodeHolder(height: height, width: width, selectedIndex: selectedIndex, index: 3,),
+                    SizedBox(width: 10),
                     Container(
                       height: height * 0.07,
                       width: width * 0.07,
@@ -178,6 +228,48 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
                       margin: EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
                           color:  isFourthPin == true ? HexColor("#0B1043") : Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Color(0xFF0B1043)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xfff2f2f2),
+                              blurRadius: 1.0, // soften the shadow
+                              spreadRadius: 0.25, //extend the shadow
+                              offset: Offset(
+                                0.0, // Move to right 10  horizontally
+                                3.0, // Move to bottom 10 Vertically
+                              ),
+                            )
+                          ]
+                      ),
+                    ),
+                    Container(
+                      height: height * 0.07,
+                      width: width * 0.07,
+                      margin: EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                          color:  isFifthPin == true ? HexColor("#0B1043") : Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Color(0xFF0B1043)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xfff2f2f2),
+                              blurRadius: 1.0, // soften the shadow
+                              spreadRadius: 0.25, //extend the shadow
+                              offset: Offset(
+                                0.0, // Move to right 10  horizontally
+                                3.0, // Move to bottom 10 Vertically
+                              ),
+                            )
+                          ]
+                      ),
+                    ),
+                    Container(
+                      height: height * 0.07,
+                      width: width * 0.07,
+                      margin: EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                          color:  isSixthPin == true ? HexColor("#0B1043") : Colors.white,
                           shape: BoxShape.circle,
                           border: Border.all(color: Color(0xFF0B1043)),
                           boxShadow: [
@@ -587,23 +679,32 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
     );
   }
 
-  void verifyPin(String input, BuildContext context){
+  void verifyPin(String input, BuildContext context) async {
+    print("Verifying " + allPinCombined);
     setState(() {
       if(input == "del"){
-        if(isFirstPin == true && isSecondPin == false && isThirdPin == false && isFourthPin == false){
+        if(isFirstPin == true && isSecondPin == false && isThirdPin == false && isFourthPin == false && isFifthPin == false && isSixthPin == false){
           isFirstPin = false;
           firstPin = "";
-        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == false && isFourthPin == false){
+        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == false && isFourthPin == false && isFifthPin == false && isSixthPin == false){
           isSecondPin = false;
           secondPin = "";
-        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == false){
+        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == false && isFifthPin == false && isSixthPin == false){
           isThirdPin = false;
           thirdPin = "";
           // 123 -> 12
-        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true){
+        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true && isFifthPin == false && isSixthPin == false){
           isFourthPin = false;
           fourthPin = "";
           // 1234 -> 123
+        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true && isFifthPin == true && isSixthPin == false){
+          isFourthPin = false;
+          fifthPin = "";
+          // 123 -> 1234
+        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true && isFifthPin == true && isSixthPin == true){
+          isFourthPin = false;
+          sixthPin = "";
+          // 12345 -> 1234
         }
       } else {
         if(isFirstPin == false){
@@ -618,35 +719,43 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
         } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == false){
           isFourthPin = true;
           fourthPin = input;
+        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true && isFifthPin == false){
+          isFifthPin = true;
+          fifthPin = input;
+        } else if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true && isFifthPin == true && isSixthPin == false){
+          isSixthPin = true;
+          sixthPin = input;
         }
-        allPinCombined = firstPin + secondPin + thirdPin + fourthPin;
+        allPinCombined = firstPin + secondPin + thirdPin + fourthPin + fifthPin + sixthPin;
       }
 
 
     });
-
-    if(emailAndPin.containsKey(widget.email)){
-      if(allPinCombined == emailAndPin[widget.email]){
-        if(emailAndStatus[widget.email] == "Activated"){
-          pref.setBool("isLoggedIn", true);
-          pref.setString("myUIDRetailer", emailAndUID[widget.email]);
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>
-                MainDashboardPage(),
-          ));
-        } else {
-          showAlertDialog(context, "Your account is not yet activated.");
-        }
+    if(allPinCombined.length == 6){
+      DitoUser user = await login(widget.email, allPinCombined);
+      if(isSuccess){
+        pref.setBool("isLoggedIn", true);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+            MainDashboardPage()), (Route<dynamic> route) => false);
       } else {
-        if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true){
-          showAlertDialog(context, "Wrong pin. Please Try Again.");
+        if(isFirstPin == true && isSecondPin == true && isThirdPin == true && isFourthPin == true && isFifthPin == true && isSixthPin == true){
+          showAlertDialog(context);
         }
-
       }
     }
+    //print(emailAndPin.values.toString());
+    // if(allPinCombined == pinCode){
+    //   print("Enter now");
+    //
+    //
+    // } else {
+    //
+    //
+    // }
+
   }
 
-  showAlertDialog(BuildContext context, String message){
+  showAlertDialog(BuildContext context){
     // set up the button
     Widget okButton = FlatButton(
       child: Text("OK"),
@@ -657,8 +766,8 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("WStar Retailer"),
-      content: Text(message),
+      title: Text("Try again"),
+      content: Text("Sorry you have entered wrong pin."),
       actions: [
         okButton,
       ],
@@ -702,14 +811,5 @@ class LoginPinCodeState extends State<LoginPinCodeScreen>{
   }
 
 
-}
-
-class Number extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-
-    );
-  }
 }
 
